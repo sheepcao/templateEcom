@@ -1,0 +1,253 @@
+{%- comment -%}
+  Coca product card.
+
+  Accepts:
+  - product: Product object (optional)
+  - card_product: Product object (optional)
+  - product_card_product: Product object (optional)
+  - collection_title: String (optional)
+  - placeholder_image: Placeholder handle (optional)
+  - show_secondary_image: Boolean (optional)
+  - quick_add: String ("none" | "standard" | "bulk", optional)
+  - show_quick_add: Boolean (optional, true => standard)
+  - section_id: String (optional)
+{%- endcomment -%}
+
+{%- liquid
+  assign product_ref = product | default: card_product | default: product_card_product
+  assign quick_add_mode = quick_add | default: 'none'
+  if show_quick_add == true and quick_add_mode == 'none'
+    assign quick_add_mode = 'standard'
+  endif
+  assign context_section_id = section_id | default: section.id | default: 'global'
+-%}
+
+{%- if product_ref != blank -%}
+  <div class="coca-product-card">
+    <div class="coca-product-card__image-wrapper">
+      <a href="{{ product_ref.url }}">
+        {%- if product_ref.featured_image -%}
+          <img
+            src="{{ product_ref.featured_image | image_url: width: 400 }}"
+            alt="{{ product_ref.featured_image.alt | escape }}"
+            class="coca-product-card__image coca-product-card__image--primary"
+            loading="lazy"
+            width="300"
+            height="400"
+          >
+          {%- if show_secondary_image and product_ref.media[1] != null -%}
+            <img
+              src="{{ product_ref.media[1] | image_url: width: 400 }}"
+              alt="{{ product_ref.media[1].alt | escape }}"
+              class="coca-product-card__image coca-product-card__image--secondary"
+              loading="lazy"
+              width="300"
+              height="400"
+            >
+          {%- endif -%}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'coca-product-card__image placeholder-svg' }}
+        {%- endif -%}
+      </a>
+
+      {%- assign show_new_badge = false -%}
+      {%- for tag in product_ref.tags -%}
+        {%- assign normalized_tag = tag | downcase | strip -%}
+        {%- if normalized_tag == 'new' -%}
+          {%- assign show_new_badge = true -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      <div class="coca-product-card__badges">
+        {%- if show_new_badge -%}
+          <span class="coca-product-card__badge coca-product-card__badge--new">NEW</span>
+        {%- endif -%}
+        {%- if product_ref.compare_at_price > product_ref.price and product_ref.available -%}
+          <span class="coca-product-card__badge coca-product-card__badge--sale">SALE</span>
+        {%- endif -%}
+        {%- unless product_ref.available -%}
+          <span class="coca-product-card__badge coca-product-card__badge--soldout">SOLD OUT</span>
+        {%- endunless -%}
+      </div>
+
+      {%- if collection_title != blank -%}
+        <span class="coca-product-card__tag">{{ collection_title | upcase }}</span>
+      {%- endif -%}
+
+    </div>
+
+    <div class="coca-product-card__info">
+      <div class="coca-product-card__heading">
+        <h3 class="coca-product-card__name">
+          <a href="{{ product_ref.url }}">{{ product_ref.title | escape }}</a>
+        </h3>
+        <button
+          type="button"
+          class="coca-product-card__wishlist js-coca-wishlist-btn"
+          data-product-handle="{{ product_ref.handle }}"
+          data-product-id="{{ product_ref.id }}"
+          aria-label="Add to wishlist"
+          aria-pressed="false"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+          </svg>
+        </button>
+      </div>
+
+      {%- if product_ref.compare_at_price > product_ref.price and product_ref.available -%}
+        <p class="coca-product-card__price coca-product-card__price--sale">
+          <span class="coca-product-card__price-current">{{ product_ref.price | money }}</span>
+          <s class="coca-product-card__price-compare">{{ product_ref.compare_at_price | money }}</s>
+        </p>
+      {%- else -%}
+        <p class="coca-product-card__price">{{ product_ref.price | money }}</p>
+      {%- endif -%}
+
+      {%- if product_ref.variants.size > 1 -%}
+        {%- liquid
+          assign color_option_index = -1
+          for option in product_ref.options_with_values
+            assign option_name = option.name | downcase | strip
+            if option_name contains 'color' or option_name contains 'colour' or option_name contains '颜色' or option_name contains '顏色'
+              assign color_option_index = forloop.index0
+              break
+            endif
+          endfor
+
+          assign all_seen_colors = '|'
+          assign total_unique_colors = 0
+          for variant in product_ref.variants
+            if color_option_index >= 0
+              assign raw_color_name = variant.options[color_option_index] | strip
+            else
+              assign raw_color_name = variant.title | split: '/' | last | strip
+            endif
+            assign color_key = raw_color_name | downcase
+            assign color_token = '|' | append: color_key | append: '|'
+            if color_key != blank
+              unless all_seen_colors contains color_token
+                assign all_seen_colors = all_seen_colors | append: color_key | append: '|'
+                assign total_unique_colors = total_unique_colors | plus: 1
+              endunless
+            endif
+          endfor
+        -%}
+
+        {%- if total_unique_colors > 0 -%}
+          <div class="coca-product-card__colors">
+            {%- assign rendered_seen_colors = '|' -%}
+            {%- assign rendered_count = 0 -%}
+            {%- for variant in product_ref.variants -%}
+              {%- if rendered_count >= 5 -%}{%- break -%}{%- endif -%}
+
+              {%- if color_option_index >= 0 -%}
+                {%- assign raw_color_name = variant.options[color_option_index] | strip -%}
+              {%- else -%}
+                {%- assign raw_color_name = variant.title | split: '/' | last | strip -%}
+              {%- endif -%}
+
+              {%- assign color_key = raw_color_name | downcase -%}
+              {%- assign color_token = '|' | append: color_key | append: '|' -%}
+              {%- if color_key == blank or rendered_seen_colors contains color_token -%}
+                {%- continue -%}
+              {%- endif -%}
+              {%- assign rendered_seen_colors = rendered_seen_colors | append: color_key | append: '|' -%}
+
+              {%- assign swatch_color = '#d7d7d7' -%}
+              {%- assign color_key_compact = color_key | replace: ' ', '' -%}
+              {%- if color_key contains '#' or color_key contains 'rgb' or color_key contains 'hsl' -%}
+                {%- assign swatch_color = raw_color_name -%}
+              {%- elsif color_key contains 'black' or color_key contains '黑' -%}
+                {%- assign swatch_color = '#111111' -%}
+              {%- elsif color_key contains 'white' or color_key contains '白' or color_key contains 'ivory' or color_key contains '米白' -%}
+                {%- assign swatch_color = '#f5f3ef' -%}
+              {%- elsif color_key contains 'grey' or color_key contains 'gray' or color_key contains '灰' -%}
+                {%- assign swatch_color = '#9da3ad' -%}
+              {%- elsif color_key contains 'beige' or color_key contains '卡其' or color_key contains '杏' -%}
+                {%- assign swatch_color = '#d5c4ab' -%}
+              {%- elsif color_key contains 'brown' or color_key contains '咖' or color_key contains '棕' -%}
+                {%- assign swatch_color = '#7a5a43' -%}
+              {%- elsif color_key contains 'blue' or color_key contains '蓝' or color_key contains '藍' or color_key_compact contains 'navy' -%}
+                {%- assign swatch_color = '#4b668f' -%}
+              {%- elsif color_key contains 'green' or color_key contains '绿' or color_key contains '綠' -%}
+                {%- assign swatch_color = '#6f8770' -%}
+              {%- elsif color_key contains 'pink' or color_key contains '粉' -%}
+                {%- assign swatch_color = '#e7b8c4' -%}
+              {%- elsif color_key contains 'red' or color_key contains '红' or color_key contains '紅' -%}
+                {%- assign swatch_color = '#b64846' -%}
+              {%- elsif color_key contains 'purple' or color_key contains '紫' -%}
+                {%- assign swatch_color = '#8f7a9e' -%}
+              {%- elsif color_key contains 'yellow' or color_key contains '黄' or color_key contains '黃' -%}
+                {%- assign swatch_color = '#d6b657' -%}
+              {%- endif -%}
+
+              <span
+                class="coca-product-card__color-dot {% if rendered_count == 0 %}coca-product-card__color-dot--active{% endif %}"
+                style="background-color: {{ swatch_color }};"
+                title="{{ raw_color_name | escape }}"
+              ></span>
+              {%- assign rendered_count = rendered_count | plus: 1 -%}
+            {%- endfor -%}
+
+            {%- if total_unique_colors > rendered_count -%}
+              <span class="coca-product-card__color-dot" style="background: linear-gradient(45deg, #999 50%, #fff 50%);"></span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if quick_add_mode != 'none' -%}
+        <div class="coca-product-card__actions">
+          {%- if product_ref.available -%}
+            {%- if product_ref.has_only_default_variant -%}
+              {%- assign product_form_id = 'coca-quick-add-' | append: context_section_id | append: '-' | append: product_ref.id -%}
+              <product-form class="coca-product-card__form">
+                {%- form 'product',
+                  product_ref,
+                  id: product_form_id,
+                  class: 'form',
+                  novalidate: 'novalidate',
+                  data-type: 'add-to-cart-form'
+                -%}
+                  <input type="hidden" name="id" value="{{ product_ref.selected_or_first_available_variant.id }}">
+                  <button
+                    id="{{ product_form_id }}-submit"
+                    type="submit"
+                    name="add"
+                    class="coca-product-card__quick-add"
+                    aria-haspopup="dialog"
+                    aria-label="{{ 'products.product.add_to_cart' | t }}"
+                  >
+                    {{ 'products.product.add_to_cart' | t }}
+                  </button>
+                {%- endform -%}
+              </product-form>
+            {%- else -%}
+              <a class="coca-product-card__quick-add coca-product-card__quick-add--link" href="{{ product_ref.url }}">
+                {{ 'products.product.choose_options' | t }}
+              </a>
+            {%- endif -%}
+          {%- else -%}
+            <button class="coca-product-card__quick-add" type="button" disabled>
+              {{ 'products.product.sold_out' | t }}
+            </button>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- else -%}
+  {%- assign fallback_placeholder = placeholder_image | default: 'product-1' -%}
+  <div class="coca-product-card coca-product-card--placeholder">
+    <div class="coca-product-card__image-wrapper coca-product-card__image-wrapper--placeholder">
+      {{ fallback_placeholder | placeholder_svg_tag: 'coca-product-card__image placeholder-svg' }}
+    </div>
+    <div class="coca-product-card__info">
+      <h3 class="coca-product-card__name">{{ 'onboarding.product_title' | t }}</h3>
+      <p class="coca-product-card__price">{{ 1999 | money }}</p>
+    </div>
+  </div>
+{%- endif -%}
+

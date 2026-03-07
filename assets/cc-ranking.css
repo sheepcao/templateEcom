@@ -1,0 +1,127 @@
+/* ============================================
+   Cocacoca Ranking - cc-ranking.css
+   ============================================ */
+
+.cc-ranking--dawn {
+  padding: 42px 0 52px;
+}
+
+.cc-ranking__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.cc-ranking__title {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: .02em;
+  font-size: clamp(28px, 2.6vw, 40px);
+  line-height: 1.1;
+}
+
+.cc-ranking__viewall {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  font-size: var(--coca-font-size-sm, 12px);
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.cc-ranking__arrow {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(0, 0, 0, .12);
+  border-radius: var(--coca-radius-full, 999px);
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.cc-ranking__viewall--mobile { display: none; }
+.cc-ranking__viewallwrap--mobile { display: none; }
+
+/* Desktop grid: 4 columns */
+.cc-ranking__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.cc-ranking__item {
+  position: relative;
+  min-width: 0;
+}
+
+/* Rank badge */
+.cc-ranking__badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  font-size: var(--coca-font-size-sm, 12px);
+  font-weight: 700;
+  color: var(--coca-color-white, #fff);
+  z-index: 5;
+  pointer-events: none;
+}
+.cc-ranking__badge--1 { background: #b7a400; }
+.cc-ranking__badge--2 { background: #9aa0aa; }
+.cc-ranking__badge--3 { background: #b47a40; }
+.cc-ranking__badge--4,
+.cc-ranking__badge--5,
+.cc-ranking__badge--6 { background: #e9e9e9; color: #555; }
+
+.cc-ranking__item .card { border: none; background: transparent; }
+.cc-ranking__item .card__media { background: var(--coca-color-bg-gray, #f3f3f3); }
+.cc-ranking__item .card__information { padding-top: 12px; }
+.cc-ranking__item .card__media .media img { object-fit: cover; }
+
+/* Desktop: only show first 4 */
+@media (min-width: 750px) {
+  .cc-ranking__item--5,
+  .cc-ranking__item--6 { display: none !important; }
+}
+
+/* Mobile: 3 columns, 2 rows */
+@media (max-width: 749px) {
+  .cc-ranking--dawn { padding: 28px 0 34px; }
+  .cc-ranking__head { margin-bottom: 14px; }
+  .cc-ranking__title { font-size: 34px; }
+  .cc-ranking__viewall--desktop { display: none; }
+  .cc-ranking__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .cc-ranking__item .card__information { padding-top: 10px; }
+  .cc-ranking__item .card__heading,
+  .cc-ranking__item .card__information .full-unstyled-link {
+    font-size: var(--coca-font-size-sm, 12px);
+    line-height: 1.45;
+  }
+  .cc-ranking__item .price__regular .price-item,
+  .cc-ranking__item .price__sale .price-item {
+    font-size: var(--coca-font-size-sm, 12px);
+  }
+  .cc-ranking__viewallwrap--mobile {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+  }
+  .cc-ranking__viewall--mobile { display: inline-flex; }
+}
+
+.cc-ranking__empty {
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, .08);
+  border-radius: 10px;
+  opacity: .85;
+}

@@ -1,0 +1,169 @@
+{%- assign has_any_link = false -%}
+{%- if section.settings.label_1 != blank or section.settings.label_2 != blank or section.settings.label_3 != blank or section.settings.label_4 != blank or section.settings.label_5 != blank -%}
+  {%- assign has_any_link = true -%}
+{%- endif -%}
+
+{%- if has_any_link -%}
+  {%- style -%}
+    .coca-mobile-quick-links-{{ section.id }} {
+      display: none;
+      border-top: 1px solid #d9d9d9;
+      border-bottom: 1px solid #d9d9d9;
+      background: #fff;
+    }
+
+    .coca-mobile-quick-links-{{ section.id }} .coca-mobile-quick-links__inner {
+      max-width: var(--page-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .coca-mobile-quick-links-{{ section.id }} .coca-mobile-quick-links__row {
+      display: grid;
+      align-items: stretch;
+      min-height: 3.8rem;
+    }
+
+    .coca-mobile-quick-links-{{ section.id }} .coca-mobile-quick-links__row--top {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-bottom: 1px solid #d9d9d9;
+    }
+
+    .coca-mobile-quick-links-{{ section.id }} .coca-mobile-quick-links__row--bottom {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .coca-mobile-quick-links-{{ section.id }} .coca-mobile-quick-links__item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      line-height: 1.2;
+      letter-spacing: 0.02em;
+      color: #555;
+      text-decoration: none;
+      padding: 0.9rem 0.6rem;
+      border-right: 1px solid #d9d9d9;
+      min-height: 3.8rem;
+    }
+
+    .coca-mobile-quick-links-{{ section.id }} .coca-mobile-quick-links__item--last {
+      border-right: 0;
+    }
+
+    .coca-mobile-quick-links-{{ section.id }} .coca-mobile-quick-links__item:hover {
+      color: #111;
+    }
+
+    @media screen and (max-width: 989px) {
+      .coca-mobile-quick-links-{{ section.id }} {
+        display: block;
+      }
+    }
+  {%- endstyle -%}
+
+  <section class="coca-mobile-quick-links-{{ section.id }}">
+    <div class="coca-mobile-quick-links__inner">
+      <div class="coca-mobile-quick-links__row coca-mobile-quick-links__row--top">
+        {%- if section.settings.label_1 != blank -%}
+          <a class="coca-mobile-quick-links__item" href="{{ section.settings.link_1 | default: '#' }}">
+            {{ section.settings.label_1 | escape }}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.label_2 != blank -%}
+          <a class="coca-mobile-quick-links__item" href="{{ section.settings.link_2 | default: '#' }}">
+            {{ section.settings.label_2 | escape }}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.label_3 != blank -%}
+          <a class="coca-mobile-quick-links__item coca-mobile-quick-links__item--last" href="{{ section.settings.link_3 | default: '#' }}">
+            {{ section.settings.label_3 | escape }}
+          </a>
+        {%- endif -%}
+      </div>
+
+      <div class="coca-mobile-quick-links__row coca-mobile-quick-links__row--bottom">
+        {%- if section.settings.label_4 != blank -%}
+          <a class="coca-mobile-quick-links__item" href="{{ section.settings.link_4 | default: '#' }}">
+            {{ section.settings.label_4 | escape }}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.label_5 != blank -%}
+          <a class="coca-mobile-quick-links__item coca-mobile-quick-links__item--last" href="{{ section.settings.link_5 | default: '#' }}">
+            {{ section.settings.label_5 | escape }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Coca Mobile Quick Links",
+  "tag": "section",
+  "class": "section-coca-mobile-quick-links",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label_1",
+      "label": "Button 1 label",
+      "default": "WOMEN"
+    },
+    {
+      "type": "url",
+      "id": "link_1",
+      "label": "Button 1 link"
+    },
+    {
+      "type": "text",
+      "id": "label_2",
+      "label": "Button 2 label",
+      "default": "MEN"
+    },
+    {
+      "type": "url",
+      "id": "link_2",
+      "label": "Button 2 link"
+    },
+    {
+      "type": "text",
+      "id": "label_3",
+      "label": "Button 3 label",
+      "default": "KIDS"
+    },
+    {
+      "type": "url",
+      "id": "link_3",
+      "label": "Button 3 link"
+    },
+    {
+      "type": "text",
+      "id": "label_4",
+      "label": "Button 4 label",
+      "default": "LIVE"
+    },
+    {
+      "type": "url",
+      "id": "link_4",
+      "label": "Button 4 link"
+    },
+    {
+      "type": "text",
+      "id": "label_5",
+      "label": "Button 5 label",
+      "default": "SNAP"
+    },
+    {
+      "type": "url",
+      "id": "link_5",
+      "label": "Button 5 link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Coca Mobile Quick Links"
+    }
+  ]
+}
+{% endschema %}

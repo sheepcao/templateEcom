@@ -1,0 +1,906 @@
+{{ 'collection-coca.css' | asset_url | stylesheet_tag }}
+{{ 'card-product-coca.css' | asset_url | stylesheet_tag }}
+
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding">
+  <div class="coca-collection">
+    <!-- Collection Title -->
+    <h1 class="coca-collection__title">{{ collection.title | escape }}</h1>
+
+    {%- assign current_collection_handle = collection.handle -%}
+    {%- assign current_collection_url = collection.url -%}
+    {%- assign current_request_path = request.path | split: '?' | first | split: '#' | first -%}
+    {%- assign current_request_path_with_slash = current_request_path | append: '/' -%}
+    {%- assign category_menu = linklists[section.settings.category_menu] -%}
+    {%- if category_menu == blank -%}
+      {%- assign category_menu = linklists.main-menu -%}
+    {%- endif -%}
+    {%- assign category_urls = ',' -%}
+    {%- assign category_items_count = 0 -%}
+    {%- capture category_items_markup -%}
+      {%- assign root_item_index = -1 -%}
+      {%- for link in category_menu.links -%}
+        {%- assign link_is_current = false -%}
+        {%- if link.object and link.object.handle == current_collection_handle -%}
+          {%- assign link_is_current = true -%}
+        {%- endif -%}
+        {%- if link.url == current_collection_url -%}
+          {%- assign link_is_current = true -%}
+        {%- endif -%}
+        {%- if link_is_current -%}
+          {%- assign root_item_index = forloop.index0 -%}
+        {%- endif -%}
+
+        {%- if root_item_index == -1 and link.links != blank -%}
+          {%- for childlink in link.links -%}
+            {%- assign child_is_current = false -%}
+            {%- if childlink.object and childlink.object.handle == current_collection_handle -%}
+              {%- assign child_is_current = true -%}
+            {%- endif -%}
+            {%- if childlink.url == current_collection_url -%}
+              {%- assign child_is_current = true -%}
+            {%- endif -%}
+            {%- if child_is_current -%}
+              {%- assign root_item_index = forloop.parentloop.index0 -%}
+            {%- endif -%}
+            {%- if childlink.links != blank -%}
+              {%- for grandchildlink in childlink.links -%}
+                {%- assign grandchild_is_current = false -%}
+                {%- if grandchildlink.object and grandchildlink.object.handle == current_collection_handle -%}
+                  {%- assign grandchild_is_current = true -%}
+                {%- endif -%}
+                {%- if grandchildlink.url == current_collection_url -%}
+                  {%- assign grandchild_is_current = true -%}
+                {%- endif -%}
+                {%- if grandchild_is_current -%}
+                  {%- assign root_item_index = forloop.parentloop.parentloop.index0 -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if root_item_index > -1 -%}
+        {%- assign root_link = category_menu.links[root_item_index] -%}
+        {%- if root_link.links != blank -%}
+          {%- assign root_link_path = root_link.url | split: '?' | first | split: '#' | first -%}
+          {%- if root_link.url contains '/collections/' -%}
+            {%- assign root_link_tail = root_link.url | split: '/collections/' | last | split: '?' | first | split: '#' | first -%}
+            {%- assign root_link_path = '/collections/' | append: root_link_tail -%}
+          {%- endif -%}
+          {%- assign root_link_path_with_slash = root_link_path | append: '/' -%}
+          {%- assign root_link_is_current = false -%}
+          {%- if root_link_path == current_request_path
+            or root_link_path_with_slash == current_request_path
+            or current_request_path_with_slash == root_link_path
+          -%}
+            {%- assign root_link_is_current = true -%}
+          {%- endif -%}
+          <label class="coca-filter__category-item">
+            <input
+              type="radio"
+              name="coca-category-filter"
+              data-category-url="{{ root_link.url }}"
+              {% if root_link_is_current %}checked{% endif %}
+              onchange="window.location.href = '{{ root_link.url }}'"
+            >
+            <span>ALL</span>
+          </label>
+          {%- assign category_items_count = category_items_count | plus: 1 -%}
+
+          {%- for nav_item in root_link.links -%}
+            {%- assign nav_url_token = ',' | append: nav_item.url | append: ',' -%}
+            {%- if nav_item.url contains '/collections/' -%}
+              {%- unless category_urls contains nav_url_token -%}
+                {%- assign category_urls = category_urls | append: nav_item.url | append: ',' -%}
+                {%- assign category_items_count = category_items_count | plus: 1 -%}
+                {%- assign nav_item_path = nav_item.url | split: '?' | first | split: '#' | first -%}
+                {%- if nav_item.url contains '/collections/' -%}
+                  {%- assign nav_item_tail = nav_item.url | split: '/collections/' | last | split: '?' | first | split: '#' | first -%}
+                  {%- assign nav_item_path = '/collections/' | append: nav_item_tail -%}
+                {%- endif -%}
+                {%- assign nav_item_path_with_slash = nav_item_path | append: '/' -%}
+                {%- assign nav_item_is_current = false -%}
+                {%- if nav_item_path == current_request_path
+                  or nav_item_path_with_slash == current_request_path
+                  or current_request_path_with_slash == nav_item_path
+                -%}
+                  {%- assign nav_item_is_current = true -%}
+                {%- endif -%}
+                <label class="coca-filter__category-item">
+                  <input
+                    type="radio"
+                    name="coca-category-filter"
+                    data-category-url="{{ nav_item.url }}"
+                    {% if nav_item_is_current %}checked{% endif %}
+                    onchange="window.location.href = '{{ nav_item.url }}'"
+                  >
+                  <span>{{ nav_item.title | upcase }}</span>
+                </label>
+              {%- endunless -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if category_items_count <= 1 -%}
+        {%- assign category_items_count = 0 -%}
+        {%- assign category_urls = ',' -%}
+        {%- for link in category_menu.links -%}
+          {%- if link.url contains '/collections/' -%}
+            {%- assign top_url_token = ',' | append: link.url | append: ',' -%}
+            {%- unless category_urls contains top_url_token -%}
+              {%- assign category_urls = category_urls | append: link.url | append: ',' -%}
+              {%- assign category_items_count = category_items_count | plus: 1 -%}
+              {%- assign link_path = link.url | split: '?' | first | split: '#' | first -%}
+              {%- if link.url contains '/collections/' -%}
+                {%- assign link_tail = link.url | split: '/collections/' | last | split: '?' | first | split: '#' | first -%}
+                {%- assign link_path = '/collections/' | append: link_tail -%}
+              {%- endif -%}
+              {%- assign link_path_with_slash = link_path | append: '/' -%}
+              {%- assign link_is_checked = false -%}
+              {%- if link_path == current_request_path
+                or link_path_with_slash == current_request_path
+                or current_request_path_with_slash == link_path
+              -%}
+                {%- assign link_is_checked = true -%}
+              {%- endif -%}
+              <label class="coca-filter__category-item">
+                <input
+                  type="radio"
+                  name="coca-category-filter"
+                  data-category-url="{{ link.url }}"
+                  {% if link_is_checked %}checked{% endif %}
+                  onchange="window.location.href = '{{ link.url }}'"
+                >
+                <span>{{ link.title | upcase }}</span>
+              </label>
+            {%- endunless -%}
+          {%- endif -%}
+          {%- if link.links != blank -%}
+            {%- for childlink in link.links -%}
+              {%- if childlink.url contains '/collections/' -%}
+                {%- assign child_url_token = ',' | append: childlink.url | append: ',' -%}
+                {%- unless category_urls contains child_url_token -%}
+                  {%- assign category_urls = category_urls | append: childlink.url | append: ',' -%}
+                  {%- assign category_items_count = category_items_count | plus: 1 -%}
+                  {%- assign childlink_path = childlink.url | split: '?' | first | split: '#' | first -%}
+                  {%- if childlink.url contains '/collections/' -%}
+                    {%- assign childlink_tail = childlink.url | split: '/collections/' | last | split: '?' | first | split: '#' | first -%}
+                    {%- assign childlink_path = '/collections/' | append: childlink_tail -%}
+                  {%- endif -%}
+                  {%- assign childlink_path_with_slash = childlink_path | append: '/' -%}
+                  {%- assign childlink_is_checked = false -%}
+                  {%- if childlink_path == current_request_path
+                    or childlink_path_with_slash == current_request_path
+                    or current_request_path_with_slash == childlink_path
+                  -%}
+                    {%- assign childlink_is_checked = true -%}
+                  {%- endif -%}
+                  <label class="coca-filter__category-item">
+                    <input
+                      type="radio"
+                      name="coca-category-filter"
+                      data-category-url="{{ childlink.url }}"
+                      {% if childlink_is_checked %}checked{% endif %}
+                      onchange="window.location.href = '{{ childlink.url }}'"
+                    >
+                    <span>{{ childlink.title | upcase }}</span>
+                  </label>
+                {%- endunless -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+
+      {%- if category_items_count == 0 -%}
+        {%- for tag in collection.all_tags limit: 10 -%}
+          {%- assign category_items_count = category_items_count | plus: 1 -%}
+          <label class="coca-filter__category-item">
+            <input
+              type="radio"
+              name="coca-category-filter"
+              data-category-url="{{ collection.url }}/{{ tag | handle }}"
+              {% if current_tags contains tag %}checked{% endif %}
+              onchange="window.location.href = '{{ collection.url }}/{{ tag | handle }}'"
+            >
+            <span>{{ tag | upcase }}</span>
+          </label>
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endcapture -%}
+
+    {%- assign price_option_count = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'price_option' and block.settings.label != blank and block.settings.tag != blank -%}
+        {%- assign price_option_count = price_option_count | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- assign color_filter = blank -%}
+    {%- assign price_list_filter = blank -%}
+    {%- assign price_range_filter = blank -%}
+    {%- for filter in collection.filters -%}
+      {%- if filter.type == 'price_range' and price_range_filter == blank -%}
+        {%- assign price_range_filter = filter -%}
+      {%- endif -%}
+      {%- if filter.type == 'list' -%}
+        {%- assign filter_label_downcase = filter.label | downcase -%}
+        {%- assign filter_param_downcase = filter.param_name | downcase -%}
+        {%- assign is_color_filter_candidate = false -%}
+        {%- if filter_label_downcase contains 'color' or filter_label_downcase contains 'colour' -%}
+          {%- assign is_color_filter_candidate = true -%}
+        {%- elsif filter.label contains '颜色' or filter.label contains '顏色' -%}
+          {%- assign is_color_filter_candidate = true -%}
+        {%- elsif filter_param_downcase contains 'color' or filter_param_downcase contains 'colour' -%}
+          {%- assign is_color_filter_candidate = true -%}
+        {%- endif -%}
+        {%- if color_filter == blank and is_color_filter_candidate -%}
+          {%- assign color_filter = filter -%}
+        {%- endif -%}
+
+        {%- assign is_price_filter_candidate = false -%}
+        {%- if filter_label_downcase contains 'price' or filter_param_downcase contains 'price' -%}
+          {%- assign is_price_filter_candidate = true -%}
+        {%- endif -%}
+        {%- if price_list_filter == blank and is_price_filter_candidate -%}
+          {%- assign price_list_filter = filter -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- assign collection_min_price_cents = blank -%}
+    {%- assign collection_max_price_cents = 0 -%}
+    {%- for item in collection.products -%}
+      {%- assign item_min_price = item.price_min | plus: 0 -%}
+      {%- assign item_max_price = item.price_max | plus: 0 -%}
+      {%- if collection_min_price_cents == blank or item_min_price < collection_min_price_cents -%}
+        {%- assign collection_min_price_cents = item_min_price -%}
+      {%- endif -%}
+      {%- if item_max_price > collection_max_price_cents -%}
+        {%- assign collection_max_price_cents = item_max_price -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if collection_min_price_cents == blank -%}
+      {%- assign collection_min_price_cents = 0 -%}
+    {%- endif -%}
+
+    {%- assign price_range_step = section.settings.price_range_step | default: 100 -%}
+    {%- assign price_range_max_buckets = section.settings.price_range_max_buckets | default: 5 -%}
+    {%- assign collection_min_price = collection_min_price_cents | divided_by: 100.0 | floor -%}
+    {%- assign collection_max_price = collection_max_price_cents | divided_by: 100.0 | ceil -%}
+    {%- assign dynamic_start_price = collection_min_price | divided_by: price_range_step | floor | times: price_range_step -%}
+    {%- assign dynamic_end_price = collection_max_price | divided_by: price_range_step | ceil | times: price_range_step -%}
+    {%- assign minimum_dynamic_end = dynamic_start_price | plus: price_range_step -%}
+    {%- if dynamic_end_price < minimum_dynamic_end -%}
+      {%- assign dynamic_end_price = minimum_dynamic_end -%}
+    {%- endif -%}
+    {%- assign dynamic_bucket_count = dynamic_end_price | minus: dynamic_start_price | divided_by: price_range_step -%}
+    {%- if dynamic_bucket_count < 2 -%}
+      {%- assign dynamic_bucket_count = 2 -%}
+    {%- endif -%}
+    {%- assign dynamic_render_count = dynamic_bucket_count -%}
+    {%- if dynamic_render_count > price_range_max_buckets -%}
+      {%- assign dynamic_render_count = price_range_max_buckets -%}
+    {%- endif -%}
+    {%- if dynamic_render_count < 2 -%}
+      {%- assign dynamic_render_count = 2 -%}
+    {%- endif -%}
+
+    {%- assign has_price_filter_options = false -%}
+    {%- if price_list_filter != blank and price_list_filter.values.size > 0 -%}
+      {%- assign has_price_filter_options = true -%}
+    {%- elsif price_range_filter != blank -%}
+      {%- assign has_price_filter_options = true -%}
+    {%- elsif price_option_count > 0 -%}
+      {%- assign has_price_filter_options = true -%}
+    {%- elsif section.settings.show_default_price_options -%}
+      {%- assign has_price_filter_options = true -%}
+    {%- endif -%}
+
+    <!-- Mobile Filter Bar -->
+    <div class="coca-mobile-filter-bar">
+      <div class="coca-mobile-filter__list">
+        <button type="button" class="coca-mobile-filter__item" onclick="openMobileFilter('sort')">
+          SORT
+        </button>
+        {%- if section.settings.show_category_filter and category_items_count > 1 -%}
+          <button type="button" class="coca-mobile-filter__item" onclick="openMobileFilter('category')">
+            CATEGORIES
+          </button>
+        {%- endif -%}
+        <button type="button" class="coca-mobile-filter__item" onclick="openMobileFilter('color')">
+          COLOR
+        </button>
+        {%- if section.settings.show_price_filter and has_price_filter_options -%}
+          <button type="button" class="coca-mobile-filter__item" onclick="openMobileFilter('price')">
+            PRICE
+          </button>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="coca-collection__layout">
+      <!-- Sidebar Filters -->
+      <aside class="coca-collection__sidebar">
+        <!-- Sort Filter -->
+        <div class="coca-filter__section">
+          <div class="coca-filter__header" onclick="toggleFilter(this)">
+            <span class="coca-filter__title coca-filter__title--sort">SORT</span>
+              <span class="coca-filter__toggle">{%- render 'coca-icon', icon: 'chevron-down' -%}</span>
+          </div>
+          <div class="coca-filter__options">
+            {%- for option in collection.sort_options -%}
+              <label class="coca-filter__option">
+                <input type="radio" name="sort_by" value="{{ option.value | escape }}"
+                  {% if option.value == collection.sort_by %}checked{% endif %}
+                  onchange="window.location.href = '{{ collection.url }}?sort_by=' + this.value">
+                <span>{{ option.name | escape }}</span>
+              </label>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <!-- Category Filter -->
+        {%- if section.settings.show_category_filter and category_items_count > 1 -%}
+          <div class="coca-filter__section">
+            <div class="coca-filter__header" onclick="toggleFilter(this)">
+              <span class="coca-filter__title">Category</span>
+              <span class="coca-filter__toggle">{%- render 'coca-icon', icon: 'chevron-down' -%}</span>
+            </div>
+            <div class="coca-filter__category-list">
+              {{ category_items_markup }}
+            </div>
+          </div>
+        {%- endif -%}
+
+        <!-- Price Filter -->
+        {%- if section.settings.show_price_filter and has_price_filter_options -%}
+          <div class="coca-filter__section">
+            <div class="coca-filter__header" onclick="toggleFilter(this)">
+              <span class="coca-filter__title">Price</span>
+              <span class="coca-filter__toggle">{%- render 'coca-icon', icon: 'chevron-down' -%}</span>
+            </div>
+            <div class="coca-filter__options coca-filter__price-list">
+              {%- if price_list_filter != blank and price_list_filter.values.size > 0 -%}
+                {%- for value in price_list_filter.values -%}
+                  <label class="coca-filter__option">
+                    <input
+                      type="checkbox"
+                      {% if value.active %}checked{% endif %}
+                      data-url-add="{{ value.url_to_add }}"
+                      data-url-remove="{{ value.url_to_remove }}"
+                      data-param="{{ price_list_filter.param_name }}"
+                      data-value="{{ value.value | escape }}"
+                      onchange="cocaApplyListFilter(this)"
+                    >
+                    <span>{{ value.label | escape }}</span>
+                  </label>
+                {%- endfor -%}
+              {%- elsif price_range_filter != blank -%}
+                {%- assign price_base_url = price_range_filter.url_to_remove -%}
+                {%- assign active_min_price = '' -%}
+                {%- assign active_max_price = '' -%}
+                {%- if price_range_filter.min_value.value != blank -%}
+                  {%- assign active_min_price = price_range_filter.min_value.value | money_without_currency | replace: ',', '' | split: '.' | first -%}
+                {%- endif -%}
+                {%- if price_range_filter.max_value.value != blank -%}
+                  {%- assign active_max_price = price_range_filter.max_value.value | money_without_currency | replace: ',', '' | split: '.' | first -%}
+                {%- endif -%}
+
+                {%- for i in (0..20) -%}
+                  {%- if i >= dynamic_render_count -%}{%- break -%}{%- endif -%}
+                  {%- assign bucket_offset = i | times: price_range_step -%}
+                  {%- assign bucket_low = dynamic_start_price | plus: bucket_offset -%}
+                  {%- assign bucket_high = bucket_low | plus: price_range_step -%}
+                  {%- assign bucket_min = bucket_low | plus: 1 -%}
+                  {%- assign bucket_max = bucket_high -%}
+                  {%- assign bucket_label = bucket_min | append: '~' | append: bucket_max -%}
+                  {%- if i == 0 and dynamic_start_price == 0 -%}
+                    {%- assign bucket_min = '' -%}
+                    {%- assign bucket_label = '~' | append: bucket_max -%}
+                  {%- endif -%}
+
+                  {%- capture bucket_url -%}
+                    {{- price_base_url -}}
+                    {%- assign joiner = '?' -%}
+                    {%- if price_base_url contains '?' -%}
+                      {%- assign joiner = '&' -%}
+                    {%- endif -%}
+                    {%- if bucket_min != blank -%}
+                      {{- joiner -}}{{ price_range_filter.min_value.param_name }}={{ bucket_min }}
+                      {%- assign joiner = '&' -%}
+                    {%- endif -%}
+                    {%- if bucket_max != blank -%}
+                      {{- joiner -}}{{ price_range_filter.max_value.param_name }}={{ bucket_max }}
+                    {%- endif -%}
+                  {%- endcapture -%}
+
+                  {%- assign is_bucket_checked = false -%}
+                  {%- assign bucket_min_str = bucket_min | append: '' -%}
+                  {%- assign bucket_max_str = bucket_max | append: '' -%}
+                  {%- if bucket_min == blank -%}
+                    {%- if active_min_price == blank and active_max_price == bucket_max_str -%}
+                      {%- assign is_bucket_checked = true -%}
+                    {%- endif -%}
+                  {%- elsif active_min_price == bucket_min_str and active_max_price == bucket_max_str -%}
+                    {%- assign is_bucket_checked = true -%}
+                  {%- endif -%}
+
+                  <label class="coca-filter__option">
+                    <input
+                      type="checkbox"
+                      {% if is_bucket_checked %}checked{% endif %}
+                      onchange="window.location.href = this.checked ? '{{ bucket_url | strip }}' : '{{ price_base_url }}'"
+                    >
+                    <span>{{ bucket_label }}</span>
+                  </label>
+                {%- endfor -%}
+
+                {%- if dynamic_bucket_count > dynamic_render_count -%}
+                  {%- assign open_offset = dynamic_render_count | times: price_range_step -%}
+                  {%- assign open_min = dynamic_start_price | plus: open_offset | plus: 1 -%}
+                  {%- assign open_label = open_min | append: '~' -%}
+                  {%- assign open_min_str = open_min | append: '' -%}
+                  {%- capture open_url -%}
+                    {{- price_base_url -}}
+                    {%- assign open_joiner = '?' -%}
+                    {%- if price_base_url contains '?' -%}
+                      {%- assign open_joiner = '&' -%}
+                    {%- endif -%}
+                    {{- open_joiner -}}{{ price_range_filter.min_value.param_name }}={{ open_min }}
+                  {%- endcapture -%}
+                  <label class="coca-filter__option">
+                    <input
+                      type="checkbox"
+                      {% if active_min_price == open_min_str and active_max_price == blank %}checked{% endif %}
+                      onchange="window.location.href = this.checked ? '{{ open_url | strip }}' : '{{ price_base_url }}'"
+                    >
+                    <span>{{ open_label }}</span>
+                  </label>
+                {%- endif -%}
+              {%- elsif price_option_count > 0 -%}
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'price_option' and block.settings.label != blank and block.settings.tag != blank -%}
+                    <label class="coca-filter__option" {{ block.shopify_attributes }}>
+                      <input
+                        type="checkbox"
+                        {% if current_tags contains block.settings.tag %}checked{% endif %}
+                        onchange="window.location.href = '{{ collection.url }}/{{ block.settings.tag | handle }}'"
+                      >
+                      <span>{{ block.settings.label | escape }}</span>
+                    </label>
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- elsif section.settings.show_default_price_options -%}
+                {%- assign default_price_labels = '~1000,1001~2000,2001~3000,3001~4000,4001~' | split: ',' -%}
+                {%- for price_label in default_price_labels -%}
+                  {%- assign price_tag = price_label | replace: '~', '-' | handleize -%}
+                  <label class="coca-filter__option">
+                    <input
+                      type="checkbox"
+                      {% if current_tags contains price_tag %}checked{% endif %}
+                      onchange="window.location.href = '{{ collection.url }}/{{ price_tag }}'"
+                    >
+                    <span>{{ price_label }}</span>
+                  </label>
+                {%- endfor -%}
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        <!-- Color Filter -->
+        {%- if section.settings.show_color_filter -%}
+          <div class="coca-filter__section">
+            <div class="coca-filter__header" onclick="toggleFilter(this)">
+              <span class="coca-filter__title">Color</span>
+              <span class="coca-filter__toggle">{%- render 'coca-icon', icon: 'chevron-down' -%}</span>
+            </div>
+            <div class="coca-filter__color-list">
+              {%- if color_filter != blank and color_filter.values.size > 0 -%}
+                {%- for value in color_filter.values -%}
+                  {%- assign color_target_url = value.url_to_add -%}
+                  {%- if value.active -%}
+                    {%- assign color_target_url = value.url_to_remove -%}
+                  {%- endif -%}
+                  <label class="coca-filter__color-item">
+                    <input
+                      type="checkbox"
+                      {% if value.active %}checked{% endif %}
+                      onchange="window.location.href = '{{ color_target_url }}'"
+                    >
+                    {%- if value.swatch and value.swatch.color != blank -%}
+                      <span class="coca-filter__color-swatch" style="background: {{ value.swatch.color }};"></span>
+                    {%- else -%}
+                      <span class="coca-filter__color-swatch coca-filter__color-swatch--{{ value.label | downcase | handle }}"></span>
+                    {%- endif -%}
+                    <span>{{ value.label | escape }}</span>
+                  </label>
+                {%- endfor -%}
+              {%- else -%}
+                <p class="coca-filter__empty">No color filters configured.</p>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </aside>
+
+      <!-- Product Grid -->
+      <div class="coca-collection__products">
+        {%- paginate collection.products by section.settings.products_per_page -%}
+          {%- if collection.products.size == 0 -%}
+            <div class="coca-collection__empty">
+              <p>{{ 'sections.collection_template.empty' | t }}</p>
+            </div>
+          {%- else -%}
+            <div class="coca-product-grid">
+              {%- for product in collection.products -%}
+                {%- render 'card-product-coca', product: product -%}
+              {%- endfor -%}
+            </div>
+
+            <!-- Pagination -->
+            {%- if paginate.pages > 1 -%}
+              <div class="coca-collection__pagination">
+                {% render 'coca-pagination', paginate: paginate, anchor: '' %}
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endpaginate -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Filter Drawer -->
+<div id="coca-mobile-filter-drawer" class="coca-mobile-filter-drawer">
+  <div class="coca-mobile-filter-drawer__overlay" onclick="closeMobileFilter()"></div>
+  <div class="coca-mobile-filter-drawer__content">
+    <div class="coca-mobile-filter-drawer__header">
+      <span class="coca-mobile-filter-drawer__title" id="mobile-filter-title">Filter</span>
+      <button type="button" class="coca-mobile-filter-drawer__close" onclick="closeMobileFilter()">&times;</button>
+    </div>
+    <div class="coca-mobile-filter-drawer__body" id="mobile-filter-body">
+      <!-- Filter content will be injected here -->
+    </div>
+    <div class="coca-mobile-filter-drawer__footer">
+      <button type="button" class="coca-mobile-filter-drawer__action coca-mobile-filter-drawer__action--clear" onclick="clearMobileFilter()">
+        Clear all
+      </button>
+      <button type="button" class="coca-mobile-filter-drawer__action coca-mobile-filter-drawer__action--apply" onclick="applyMobileFilter()">
+        Apply
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const mobileFilterState = {
+    type: '',
+    pendingUrl: ''
+  };
+
+  function cocaNormalizeCategoryPath(rawUrl) {
+    if (!rawUrl) return '';
+    let pathname = '';
+    try {
+      pathname = new URL(rawUrl, window.location.origin).pathname;
+    } catch (e) {
+      pathname = rawUrl;
+    }
+    let normalized = decodeURIComponent(pathname || '').replace(/\/+$/, '');
+    return normalized || '/';
+  }
+
+  function cocaSyncCategoryCheckedFromUrl() {
+    const currentPath = cocaNormalizeCategoryPath(window.location.pathname);
+    const categoryInputs = document.querySelectorAll('.coca-filter__category-item input[type="radio"][name="coca-category-filter"]');
+    if (!categoryInputs.length) return;
+
+    categoryInputs.forEach((input) => {
+      input.checked = false;
+    });
+
+    const exactMatch = Array.from(categoryInputs).find((input) => {
+      const itemPath = cocaNormalizeCategoryPath(input.dataset.categoryUrl || '');
+      return itemPath === currentPath;
+    });
+
+    if (exactMatch) {
+      exactMatch.checked = true;
+      return;
+    }
+
+    let bestPrefixInput = null;
+    let bestPrefixLength = -1;
+    categoryInputs.forEach((input) => {
+      const itemPath = cocaNormalizeCategoryPath(input.dataset.categoryUrl || '');
+      if (itemPath !== '/' && currentPath.startsWith(itemPath + '/') && itemPath.length > bestPrefixLength) {
+        bestPrefixInput = input;
+        bestPrefixLength = itemPath.length;
+      }
+    });
+
+    if (bestPrefixInput) bestPrefixInput.checked = true;
+  }
+
+  function cocaApplyListFilter(input) {
+    const targetUrl = input.checked ? input.dataset.urlAdd : input.dataset.urlRemove;
+    if (targetUrl) {
+      window.location.href = targetUrl;
+      return;
+    }
+
+    const paramName = input.dataset.param;
+    const paramValue = input.dataset.value || '';
+    if (!paramName || !paramValue) return;
+
+    const url = new URL(window.location.href);
+    if (input.checked) {
+      url.searchParams.set(paramName, paramValue);
+    } else {
+      url.searchParams.delete(paramName);
+    }
+    window.location.href = url.pathname + url.search;
+  }
+
+  function buildSortUrl(value) {
+    return '{{ collection.url }}?sort_by=' + encodeURIComponent(value);
+  }
+
+  function parseOnChangeUrl(onChangeCode, inputEl) {
+    if (!onChangeCode) return '';
+
+    const prefixedUrl = onChangeCode.match(/window\.location\.href\s*=\s*'([^']+)'\s*\+\s*this\.value/);
+    if (prefixedUrl) {
+      return prefixedUrl[1] + encodeURIComponent(inputEl.value);
+    }
+
+    const staticUrl = onChangeCode.match(/window\.location\.href\s*=\s*'([^']+)'/);
+    return staticUrl ? staticUrl[1] : '';
+  }
+
+  function setupMobileFilterInputs(body, type) {
+    const inputs = body.querySelectorAll('input');
+
+    inputs.forEach((input) => {
+      const onChangeCode = input.getAttribute('onchange');
+      const targetUrl = parseOnChangeUrl(onChangeCode, input);
+      if (targetUrl) {
+        input.dataset.mobileTargetUrl = targetUrl;
+      }
+      input.removeAttribute('onchange');
+
+      input.addEventListener('change', () => {
+        if (type === 'sort') {
+          mobileFilterState.pendingUrl = buildSortUrl(input.value);
+          return;
+        }
+
+        if ((type === 'category' || type === 'price') && input.type === 'checkbox') {
+          body.querySelectorAll('input[type="checkbox"]').forEach((other) => {
+            if (other !== input) other.checked = false;
+          });
+          mobileFilterState.pendingUrl = input.checked ? (input.dataset.mobileTargetUrl || '') : '';
+          return;
+        }
+
+        mobileFilterState.pendingUrl = input.dataset.mobileTargetUrl || '';
+      });
+    });
+
+    if (type === 'sort') {
+      const checked = body.querySelector('input[type="radio"]:checked');
+      if (checked) mobileFilterState.pendingUrl = buildSortUrl(checked.value);
+    }
+  }
+
+  // Toggle filter section
+  function toggleFilter(header) {
+    const section = header.parentElement;
+    const content = section.querySelector('.coca-filter__options, .coca-filter__category-list, .coca-filter__color-list, .coca-filter__price-list');
+
+    if (content.style.display === 'none') {
+      content.style.display = '';
+      section.classList.remove('is-collapsed');
+    } else {
+      content.style.display = 'none';
+      section.classList.add('is-collapsed');
+    }
+  }
+
+  // Mobile filter drawer
+  function openMobileFilter(type) {
+    const drawer = document.getElementById('coca-mobile-filter-drawer');
+    const title = document.getElementById('mobile-filter-title');
+    const body = document.getElementById('mobile-filter-body');
+
+    const titles = {
+      sort: 'SORT',
+      category: 'CATEGORIES',
+      color: 'COLOR',
+      price: 'PRICE'
+    };
+
+    title.textContent = titles[type] || 'Filter';
+    mobileFilterState.type = type;
+    mobileFilterState.pendingUrl = '';
+    drawer.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    let sourceContent;
+    if (type === 'sort') {
+      sourceContent = document.querySelector('.coca-filter__options');
+    } else if (type === 'category') {
+      sourceContent = document.querySelector('.coca-filter__category-list');
+    } else if (type === 'color') {
+      sourceContent = document.querySelector('.coca-filter__color-list');
+    } else if (type === 'price') {
+      sourceContent = document.querySelector('.coca-filter__price-list');
+    }
+
+    if (sourceContent) {
+      const clonedContent = sourceContent.cloneNode(true);
+      clonedContent.style.display = '';
+      clonedContent.removeAttribute('hidden');
+      body.innerHTML = '';
+      body.appendChild(clonedContent);
+      setupMobileFilterInputs(body, type);
+    } else {
+      body.innerHTML = '<p class="coca-mobile-filter-drawer__empty">No options available.</p>';
+    }
+  }
+
+  function closeMobileFilter() {
+    const drawer = document.getElementById('coca-mobile-filter-drawer');
+    drawer.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function clearMobileFilter() {
+    const body = document.getElementById('mobile-filter-body');
+    body.querySelectorAll('input').forEach((input) => {
+      input.checked = false;
+    });
+    mobileFilterState.pendingUrl = '{{ collection.url }}';
+  }
+
+  function applyMobileFilter() {
+    if (mobileFilterState.pendingUrl) {
+      window.location.href = mobileFilterState.pendingUrl;
+      return;
+    }
+    closeMobileFilter();
+  }
+
+  cocaSyncCategoryCheckedFromUrl();
+
+</script>
+
+{% schema %}
+{
+  "name": "Coca Collection",
+  "class": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 16,
+      "label": "Products per page"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category_filter",
+      "default": true,
+      "label": "Show category filter"
+    },
+    {
+      "type": "link_list",
+      "id": "category_menu",
+      "label": "Category menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_color_filter",
+      "default": true,
+      "label": "Show color filter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price_filter",
+      "default": true,
+      "label": "Show price filter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_default_price_options",
+      "default": true,
+      "label": "Show default price options when no blocks"
+    },
+    {
+      "type": "range",
+      "id": "price_range_step",
+      "min": 100,
+      "max": 5000,
+      "step": 100,
+      "default": 100,
+      "label": "Dynamic price range interval"
+    },
+    {
+      "type": "range",
+      "id": "price_range_max_buckets",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 5,
+      "label": "Max dynamic price ranges"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "price_option",
+      "name": "Price option",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "~1000"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag (used for filtering URL)",
+          "default": "price-under-1000"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

@@ -1,0 +1,248 @@
+.coca-product-card {
+  position: relative;
+}
+
+.coca-product-card__image-wrapper {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #f7f3ef;
+}
+
+.coca-product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.32s ease;
+}
+
+.coca-product-card__image--secondary {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.coca-product-card:hover .coca-product-card__image--secondary {
+  opacity: 1;
+}
+
+.coca-product-card:hover .coca-product-card__image--primary {
+  transform: scale(1.01);
+}
+
+.coca-product-card__badges {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 2;
+}
+
+.coca-product-card__badge {
+  background: #f0dfcb;
+  color: #6a4a2f;
+  border: 1px solid #e4cdae;
+  font-size: 10px;
+  line-height: 1.1;
+  padding: 3px 6px;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  font-weight: 600;
+}
+
+.coca-product-card__badge--new {
+  background: #f3e4d1;
+  color: #6a4a2f;
+  border-color: #e4cdae;
+}
+
+.coca-product-card__badge--sale {
+  background: #bb4238;
+  color: #fff;
+  border-color: #bb4238;
+}
+
+.coca-product-card__badge--soldout {
+  background: #8e8e8e;
+  color: #fff;
+  border-color: #8e8e8e;
+}
+
+.coca-product-card__tag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #fff;
+  border: 1px solid #d7d7d7;
+  font-size: 10px;
+  line-height: 1;
+  padding: 3px 6px;
+  letter-spacing: 0.06em;
+  z-index: 1;
+}
+
+.coca-product-card__info {
+  padding: 10px 2px 0;
+}
+
+.coca-product-card__heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 8px;
+}
+
+.coca-product-card__wishlist {
+  position: static;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  flex: 0 0 auto;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  color: #333;
+  margin-top: 2px;
+}
+
+.coca-product-card__wishlist svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  fill: none;
+}
+
+.coca-product-card__wishlist.is-active svg,
+.coca-product-card__wishlist[aria-pressed='true'] svg {
+  fill: #111;
+}
+
+.coca-product-card__name {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 400;
+  color: #333;
+  max-width: 100%;
+}
+
+.coca-product-card__name a {
+  color: inherit;
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: calc(1.35em * 2);
+}
+
+.coca-product-card__price {
+  margin: 6px 0 0;
+  font-size: 22px;
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #333;
+}
+
+.coca-product-card__price--sale {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.coca-product-card__price-current {
+  color: #333;
+  font-weight: 600;
+}
+
+.coca-product-card__price-compare {
+  color: #8f8f8f;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.coca-product-card__colors {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.coca-product-card__color-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid #d0d0d0;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.coca-product-card__color-dot--active {
+  border-color: #fff;
+  box-shadow: 0 0 0 1px #fff, 0 0 0 2px #111;
+}
+
+.coca-product-card__actions {
+  margin-top: 12px;
+}
+
+.coca-product-card__form {
+  display: block;
+}
+
+.coca-product-card__quick-add {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.coca-product-card__quick-add:hover {
+  background: #111;
+  color: #fff;
+}
+
+.coca-product-card__quick-add:disabled {
+  border-color: #bbb;
+  color: #999;
+  background: #f3f3f3;
+  cursor: not-allowed;
+}
+
+.coca-product-card__quick-add--link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.coca-product-card--placeholder .placeholder-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@media screen and (max-width: 749px) {
+  .coca-product-card__price {
+    font-size: 20px;
+  }
+
+  .coca-product-card__name {
+    font-size: 12px;
+  }
+}

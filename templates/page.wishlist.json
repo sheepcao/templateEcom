@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "main": {
+      "type": "coca-wishlist",
+      "settings": {
+        "title": "Wishlist",
+        "empty_text": "Your wishlist is empty.",
+        "empty_link_text": "Continue shopping",
+        "empty_link": "",
+        "padding_top": 40,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

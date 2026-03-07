@@ -1,0 +1,25 @@
+{
+  "name": "Coca Footer",
+  "type": "footer",
+  "sections": {
+    "footer": {
+      "type": "footer-coca",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "newsletter_enable": true,
+        "newsletter_heading": "Newsletter signup",
+        "newsletter_text": "Get updates on new arrivals and special offers.",
+        "show_social": true,
+        "payment_enable": true,
+        "show_policy": true,
+        "show_company_info": true,
+        "enable_country_selector": true,
+        "enable_language_selector": true,
+        "margin_top": 80
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

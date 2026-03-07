@@ -1,0 +1,435 @@
+{{ 'header-coca.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign menu = section.settings.menu
+-%}
+
+<!-- Desktop Header -->
+<div class="coca-header-wrapper coca-header-wrapper--desktop">
+  <header class="coca-header">
+    <!-- Logo -->
+    <a href="{{ routes.root_url }}" class="coca-logo">
+      {%- if settings.logo != blank -%}
+        <img src="{{ settings.logo | image_url: width: 200 }}" 
+             alt="{{ shop.name }}" 
+             width="{{ settings.logo_width }}"
+             height="{{ settings.logo_width | divided_by: settings.logo.aspect_ratio | round }}"
+             style="max-height: 40px; width: auto;">
+      {%- else -%}
+        {{ shop.name }}
+      {%- endif -%}
+    </a>
+
+    <!-- Navigation -->
+    <nav class="coca-nav">
+      {%- if menu != blank -%}
+        {%- for link in menu.links -%}
+          <div class="coca-nav__item-wrapper">
+            {%- if link.links != blank -%}
+              <a href="{{ link.url }}" class="coca-nav__item coca-nav__item--has-dropdown">
+                {{ link.title | escape }}
+              </a>
+              <!-- Mega Menu -->
+              <div class="coca-mega-menu">
+                <div class="coca-mega-menu__inner">
+                  <div class="coca-mega-menu__section coca-mega-menu__section--featured">
+                    <a href="{{ link.url }}" class="coca-mega-menu__title-link">
+                      ALL
+                    </a>
+                  </div>
+                  {%- for childlink in link.links -%}
+                    <div class="coca-mega-menu__section">
+                      <a href="{{ childlink.url }}" class="coca-mega-menu__title-link">
+                        {{ childlink.title | escape }}
+                      </a>
+                      {%- if childlink.links != blank -%}
+                        {%- for grandchildlink in childlink.links -%}
+                          <a href="{{ grandchildlink.url }}" class="coca-mega-menu__link">
+                            {{ grandchildlink.title | escape }}
+                          </a>
+                        {%- endfor -%}
+                      {%- endif -%}
+                    </div>
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- else -%}
+              <a href="{{ link.url }}" class="coca-nav__item">
+                {{ link.title | escape }}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </nav>
+
+    <!-- Right Side: Search & Icons -->
+    <div class="coca-header__right">
+      <!-- Search Box -->
+      <form action="{{ routes.search_url }}" method="get" role="search" class="coca-search-box">
+        <input type="search"
+               name="q"
+               placeholder="{{ section.settings.search_placeholder | default: 'Search by keyword' }}"
+               aria-label="{{ 'general.search.search' | t }}">
+        <button type="submit" class="coca-search-btn" aria-label="{{ 'general.search.search' | t }}">
+          {%- render 'coca-icon', icon: 'search' -%}
+        </button>
+      </form>
+
+      <!-- Wishlist Icon -->
+      <a href="/pages/wishlist" class="coca-icon-btn" aria-label="Wishlist">
+        {%- render 'coca-icon', icon: 'heart' -%}
+      </a>
+
+      <!-- Account Icon -->
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" 
+           class="coca-icon-btn" 
+           aria-label="{{ 'customer.account.title' | t }}">
+          {%- render 'coca-icon', icon: 'account' -%}
+        </a>
+      {%- endif -%}
+
+      <!-- Cart Icon -->
+      <a href="{{ routes.cart_url }}" class="coca-icon-btn coca-icon-btn--cart" aria-label="{{ 'templates.cart.cart' | t }}">
+        {%- render 'coca-icon', icon: 'cart' -%}
+        {%- if cart.item_count > 0 -%}
+          <span class="coca-cart-count">{{ cart.item_count }}</span>
+        {%- endif -%}
+      </a>
+    </div>
+  </header>
+</div>
+
+<!-- Mobile Header -->
+<div class="coca-header-wrapper coca-header-wrapper--mobile">
+  <header class="coca-header--mobile">
+    <!-- Menu Button -->
+    <button type="button" class="coca-mobile-menu-btn" aria-label="{{ 'sections.header.menu' | t }}" onclick="cocaOpenDrawer('{{ section.id }}')">
+      {%- render 'coca-icon', icon: 'menu' -%}
+    </button>
+
+    <!-- Mobile Logo -->
+    <a href="{{ routes.root_url }}" class="coca-mobile-logo">
+      {%- if settings.logo != blank -%}
+        <img src="{{ settings.logo | image_url: width: 150 }}" 
+             alt="{{ shop.name }}" 
+             width="100"
+             height="{{ 100 | divided_by: settings.logo.aspect_ratio | round }}"
+             style="max-height: 30px; width: auto;">
+      {%- else -%}
+        {{ shop.name }}
+      {%- endif -%}
+    </a>
+
+    <!-- Mobile Icons -->
+    <div class="coca-mobile-icons">
+      <a href="{{ routes.search_url }}" class="coca-icon-btn" aria-label="{{ 'general.search.search' | t }}">
+        {%- render 'coca-icon', icon: 'search' -%}
+      </a>
+      <a href="{{ routes.cart_url }}" class="coca-icon-btn" aria-label="{{ 'templates.cart.cart' | t }}">
+        {%- render 'coca-icon', icon: 'cart' -%}
+        {%- if cart.item_count > 0 -%}
+          <span class="coca-cart-count">{{ cart.item_count }}</span>
+        {%- endif -%}
+      </a>
+    </div>
+  </header>
+</div>
+
+<!-- Mobile Drawer -->
+<div id="coca-drawer-overlay-{{ section.id }}" class="coca-drawer-overlay" onclick="cocaCloseDrawer()"></div>
+
+<aside id="coca-drawer-{{ section.id }}" class="coca-drawer">
+  <!-- Close Button -->
+  <div class="coca-drawer__header">
+    <button
+      type="button"
+      class="coca-drawer__close"
+      aria-label="{{ 'accessibility.close' | t }}"
+      onclick="cocaCloseDrawer()"
+      onpointerdown="cocaCloseDrawer(); return false;"
+      ontouchstart="cocaCloseDrawer(); return false;"
+    >
+      {%- render 'coca-icon', icon: 'close' -%}
+    </button>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="coca-drawer__buttons">
+    {%- if section.settings.member_register_text != blank -%}
+      <a href="{{ section.settings.member_register_link | default: routes.account_register_url }}" class="coca-drawer__btn coca-drawer__btn--primary">
+        {{ section.settings.member_register_text }}
+      </a>
+    {%- endif -%}
+    {%- if section.settings.login_text != blank -%}
+      <a href="{{ routes.account_login_url }}" class="coca-drawer__btn coca-drawer__btn--secondary">
+        {{ section.settings.login_text }}
+      </a>
+    {%- endif -%}
+    {%- if section.settings.wishlist_text != blank -%}
+      <a href="/pages/wishlist" class="coca-drawer__btn coca-drawer__btn--outline">
+        {{ section.settings.wishlist_text }}
+      </a>
+    {%- endif -%}
+    {%- if section.settings.store_list_text != blank -%}
+      <a href="{{ section.settings.store_list_link | default: '/pages/stores' }}" class="coca-drawer__btn coca-drawer__btn--outline">
+        {{ section.settings.store_list_text }}
+      </a>
+    {%- endif -%}
+  </div>
+
+  <!-- Navigation -->
+  <nav class="coca-drawer__nav">
+    {%- if menu != blank -%}
+      {%- for link in menu.links -%}
+        <div class="coca-drawer__category" data-category="{{ link.handle }}">
+          {%- if link.links != blank -%}
+            <div class="coca-drawer__category-header" onclick="this.parentElement.classList.toggle('expanded');">
+              <button type="button" class="coca-drawer__category-title coca-drawer__category-title--button" aria-expanded="false">
+                {{ link.title | escape }}
+              </button>
+              <button type="button" class="coca-drawer__toggle" aria-label="Toggle">
+                {%- render 'coca-icon', icon: 'chevron-down' -%}
+              </button>
+            </div>
+            <div class="coca-drawer__submenu">
+              <ul class="coca-drawer__submenu-list">
+                <li class="coca-drawer__submenu-item">
+                  <a href="{{ link.url }}" class="coca-drawer__submenu-link">ALL</a>
+                </li>
+                {%- for childlink in link.links -%}
+                  <li class="coca-drawer__submenu-item">
+                    <a href="{{ childlink.url }}" class="coca-drawer__submenu-link">{{ childlink.title | escape }}</a>
+                    {%- if childlink.links != blank -%}
+                      <ul style="list-style: none; padding-left: 15px; margin-top: 8px;">
+                        {%- for grandchildlink in childlink.links -%}
+                          <li style="padding: 5px 0;">
+                            <a href="{{ grandchildlink.url }}" style="font-size: 12px; color: #888; text-decoration: none;">{{ grandchildlink.title | escape }}</a>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- else -%}
+            <div class="coca-drawer__category-header">
+              <a href="{{ link.url }}" class="coca-drawer__category-title">{{ link.title | escape }}</a>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    {%- endif -%}
+  </nav>
+</aside>
+
+<script>
+  function cocaOpenDrawer(sectionId) {
+    const drawer = sectionId ? document.getElementById('coca-drawer-' + sectionId) : document.querySelector('.coca-drawer');
+    const overlay = sectionId ? document.getElementById('coca-drawer-overlay-' + sectionId) : document.querySelector('.coca-drawer-overlay');
+    if (!drawer || !overlay) return;
+    drawer.style.transform = '';
+    overlay.style.opacity = '';
+    overlay.style.visibility = '';
+    overlay.style.pointerEvents = '';
+    drawer.classList.add('active');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function cocaCloseDrawer() {
+    document.querySelectorAll('.coca-drawer').forEach((drawer) => {
+      drawer.classList.remove('active');
+      drawer.style.transform = 'translateX(-110%)';
+    });
+    document.querySelectorAll('.coca-drawer-overlay').forEach((overlay) => {
+      overlay.classList.remove('active');
+      overlay.style.opacity = '0';
+      overlay.style.visibility = 'hidden';
+      overlay.style.pointerEvents = 'none';
+    });
+    document.body.style.overflow = '';
+  }
+
+  // Update toggle button text based on expanded state
+  document.querySelectorAll('.coca-drawer__category').forEach(category => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const titleButton = category.querySelector('.coca-drawer__category-title--button');
+          const isExpanded = category.classList.contains('expanded');
+          if (titleButton) {
+            titleButton.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+          }
+        }
+      });
+    });
+    observer.observe(category, { attributes: true });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      cocaCloseDrawer();
+    }
+  });
+
+  // Mobile fallback: close drawer via delegated click/touch even if inline handler is blocked
+  document.addEventListener('click', (event) => {
+    if (event.target.closest('.coca-drawer__close') || event.target.closest('.coca-drawer-overlay')) {
+      event.preventDefault();
+      cocaCloseDrawer();
+    }
+  });
+
+  document.addEventListener('touchstart', (event) => {
+    if (event.target.closest('.coca-drawer__close') || event.target.closest('.coca-drawer-overlay')) {
+      cocaCloseDrawer();
+    }
+  }, { passive: true });
+
+  // Hard fallback for product page: intercept close interactions in capture phase
+  document.querySelectorAll('.coca-drawer__close').forEach((button) => {
+    const forceClose = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      cocaCloseDrawer();
+    };
+    button.addEventListener('pointerdown', forceClose, true);
+    button.addEventListener('touchstart', forceClose, true);
+    button.addEventListener('click', forceClose, true);
+  });
+
+  // Mobile floating header on scroll
+  (function initCocaMobileFloatingHeader() {
+    const mobileWrapper = document.querySelector('.coca-header-wrapper--mobile');
+    if (!mobileWrapper) return;
+
+    let stickyStartY = 0;
+    let ticking = false;
+
+    function syncHeaderHeight() {
+      document.documentElement.style.setProperty('--coca-mobile-header-height', `${mobileWrapper.offsetHeight}px`);
+    }
+
+    function updateStickyStartY() {
+      const isSticky = mobileWrapper.classList.contains('is-sticky');
+      if (!isSticky) stickyStartY = mobileWrapper.offsetTop;
+    }
+
+    function applyStickyState() {
+      if (window.innerWidth >= 990) {
+        mobileWrapper.classList.remove('is-sticky');
+        document.body.classList.remove('coca-mobile-header-has-sticky');
+        return;
+      }
+
+      const shouldSticky = window.scrollY > stickyStartY;
+      mobileWrapper.classList.toggle('is-sticky', shouldSticky);
+      document.body.classList.toggle('coca-mobile-header-has-sticky', shouldSticky);
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        applyStickyState();
+        ticking = false;
+      });
+    }
+
+    function onResize() {
+      syncHeaderHeight();
+      updateStickyStartY();
+      applyStickyState();
+    }
+
+    syncHeaderHeight();
+    updateStickyStartY();
+    applyStickyState();
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Coca Header",
+  "class": "section-header-coca",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search Placeholder",
+      "default": "Search by keyword"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Drawer Buttons"
+    },
+    {
+      "type": "text",
+      "id": "member_register_text",
+      "label": "Member Register Button Text",
+      "default": "Member Register"
+    },
+    {
+      "type": "url",
+      "id": "member_register_link",
+      "label": "Member Register Link"
+    },
+    {
+      "type": "text",
+      "id": "login_text",
+      "label": "Login Button Text",
+      "default": "Login"
+    },
+    {
+      "type": "text",
+      "id": "wishlist_text",
+      "label": "Wishlist Button Text",
+      "default": "Wishlist"
+    },
+    {
+      "type": "text",
+      "id": "store_list_text",
+      "label": "Store List Button Text",
+      "default": "Store list"
+    },
+    {
+      "type": "url",
+      "id": "store_list_link",
+      "label": "Store List Link"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Coca Header"
+    }
+  ]
+}
+{% endschema %}
+

@@ -1,0 +1,111 @@
+/* ============================================
+   Cocacoca News Carousel - cc-news-carousel.css
+   ============================================ */
+
+.cc-news {
+  width: 100%;
+  color: rgb(var(--color-foreground));
+  background: rgb(var(--color-background));
+  font-family: var(--font-body-family);
+}
+
+.cc-news__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.cc-news__title {
+  margin: 0;
+  font-size: clamp(18px, 1.4vw, 20px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-family: var(--font-heading-family);
+  line-height: 1.2;
+}
+
+.cc-news__controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+.cc-news__btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(var(--color-foreground), .12);
+  background: transparent;
+  border-radius: var(--coca-radius-full, 999px);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  color: rgb(var(--color-foreground));
+  transition: transform .15s ease, opacity .15s ease;
+}
+.cc-news__btn:hover { transform: translateY(-1px); }
+.cc-news__btn:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+
+.cc-news__icon {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+.cc-news__icon--next {
+  transform: rotate(180deg);
+}
+
+.cc-news__count {
+  font-size: var(--coca-font-size-sm, 12px);
+  letter-spacing: .08em;
+  min-width: 40px;
+  text-align: center;
+  opacity: .9;
+  font-variant-numeric: tabular-nums;
+}
+
+.cc-news__viewport {
+  overflow: hidden;
+}
+
+.cc-news__track {
+  display: flex;
+  will-change: transform;
+  transition: transform 280ms ease;
+}
+
+.cc-news__slide {
+  min-width: 100%;
+}
+
+.cc-news__link {
+  display: inline-block;
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+  font-size: var(--coca-font-size-base, 14px);
+  letter-spacing: .02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.6;
+}
+
+.cc-news__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cc-news__date {
+  margin-left: 4px;
+  opacity: .85;
+}
+
+@media (max-width: 749px) {
+  .cc-news__btn { width: 30px; height: 30px; }
+  .cc-news__link { font-size: 13px; }
+}

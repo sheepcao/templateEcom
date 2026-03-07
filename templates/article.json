@@ -1,0 +1,22 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-article-coca",
+      "settings": {
+        "show_back_link": true,
+        "show_featured_image": true,
+        "show_category_tag": true,
+        "show_tags": true,
+        "show_share_buttons": true,
+        "show_article_navigation": true,
+        "show_related_articles": true,
+        "related_title": "Related articles",
+        "padding_top": 20,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

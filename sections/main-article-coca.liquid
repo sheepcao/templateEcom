@@ -1,0 +1,235 @@
+{{ 'article-coca.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<article class="coca-article section-{{ section.id }}-padding">
+  <!-- Breadcrumbs -->
+  {%- render 'coca-breadcrumbs' -%}
+
+  <!-- Back to Blog -->
+  {%- if section.settings.show_back_link -%}
+    <div class="coca-article__back">
+      <a href="{{ blog.url }}" class="coca-article__back-link">
+        {%- render 'coca-icon', icon: 'arrow-back' -%}
+        {{ blog.title }}
+      </a>
+    </div>
+  {%- endif -%}
+
+  <!-- Article Header -->
+  <header class="coca-article__header">
+    <div class="coca-article__meta">
+      <time class="coca-article__date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+        {{ article.published_at | date: '%Y.%m.%d' }}
+      </time>
+      {%- if article.tags.size > 0 and section.settings.show_category_tag -%}
+        <a href="{{ blog.url }}/tagged/{{ article.tags.first | handle }}" class="coca-article__category">
+          {{ article.tags.first }}
+        </a>
+      {%- endif -%}
+    </div>
+    <h1 class="coca-article__title">{{ article.title | escape }}</h1>
+  </header>
+
+  <!-- Article Hero Image -->
+  {%- if article.image and section.settings.show_featured_image -%}
+    <div class="coca-article__hero">
+      <img
+        srcset="
+          {%- if article.image.width >= 500 -%}{{ article.image | image_url: width: 500 }} 500w,{%- endif -%}
+          {%- if article.image.width >= 800 -%}{{ article.image | image_url: width: 800 }} 800w,{%- endif -%}
+          {%- if article.image.width >= 1200 -%}{{ article.image | image_url: width: 1200 }} 1200w,{%- endif -%}
+          {%- if article.image.width >= 1600 -%}{{ article.image | image_url: width: 1600 }} 1600w,{%- endif -%}
+          {{ article.image | image_url }} {{ article.image.width }}w
+        "
+        sizes="(min-width: 900px) 900px, 100vw"
+        src="{{ article.image | image_url: width: 1200 }}"
+        alt="{{ article.image.alt | escape }}"
+        width="{{ article.image.width }}"
+        height="{{ article.image.height }}"
+        loading="eager"
+      >
+    </div>
+  {%- endif -%}
+
+  <!-- Article Content -->
+  <div class="coca-article__content rte">
+    {{ article.content }}
+  </div>
+
+  <!-- Article Tags -->
+  {%- if article.tags.size > 0 and section.settings.show_tags -%}
+    <div class="coca-article__tags">
+      <div class="coca-article__tags-label">TAGS</div>
+      <div class="coca-article__tags-list">
+        {%- for tag in article.tags -%}
+          <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="coca-article__tag">{{ tag }}</a>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  <!-- Share Buttons -->
+  {%- if section.settings.show_share_buttons -%}
+    {%- render 'coca-share-buttons', url: article.url, title: article.title, label_visible: true -%}
+  {%- endif -%}
+
+  <!-- Article Navigation -->
+  {%- if section.settings.show_article_navigation -%}
+    <nav class="coca-article__nav">
+      <div class="coca-article__nav-grid">
+        {%- if blog.previous_article -%}
+          <a href="{{ blog.previous_article.url }}" class="coca-article__nav-item">
+            <div class="coca-article__nav-label">Previous</div>
+            <div class="coca-article__nav-title">{{ blog.previous_article.title | escape }}</div>
+          </a>
+        {%- else -%}
+          <div></div>
+        {%- endif -%}
+        
+        {%- if blog.next_article -%}
+          <a href="{{ blog.next_article.url }}" class="coca-article__nav-item coca-article__nav-item--next">
+            <div class="coca-article__nav-label">Next</div>
+            <div class="coca-article__nav-title">{{ blog.next_article.title | escape }}</div>
+          </a>
+        {%- else -%}
+          <div></div>
+        {%- endif -%}
+      </div>
+    </nav>
+  {%- endif -%}
+
+  <!-- Related Articles -->
+  {%- if section.settings.show_related_articles -%}
+    {%- assign related_count = 0 -%}
+    
+    <div class="coca-article__related">
+      <h2 class="coca-article__related-title">{{ section.settings.related_title | default: 'Related articles' }}</h2>
+      <div class="coca-article__related-grid">
+        {%- for related_article in blog.articles -%}
+          {%- unless related_article.id == article.id -%}
+            {%- assign related_count = related_count | plus: 1 -%}
+            {%- if related_count <= 3 -%}
+              <a href="{{ related_article.url }}" class="coca-article__related-item">
+                {%- if related_article.image -%}
+                  <div class="coca-article__related-image">
+                    <img
+                      src="{{ related_article.image | image_url: width: 400 }}"
+                      alt="{{ related_article.image.alt | escape }}"
+                      width="400"
+                      height="300"
+                      loading="lazy"
+                    >
+                  </div>
+                {%- endif -%}
+                <div class="coca-article__related-date">
+                  {{ related_article.published_at | date: '%Y.%m.%d' }}
+                </div>
+                <div class="coca-article__related-item-title">
+                  {{ related_article.title | escape }}
+                </div>
+              </a>
+            {%- endif -%}
+          {%- endunless -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</article>
+
+{% schema %}
+{
+  "name": "Coca Article",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Article Content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_back_link",
+      "default": true,
+      "label": "Show back to blog link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_image",
+      "default": true,
+      "label": "Show featured image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category_tag",
+      "default": true,
+      "label": "Show category tag"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "default": true,
+      "label": "Show article tags"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share_buttons",
+      "default": true,
+      "label": "Show share buttons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_article_navigation",
+      "default": true,
+      "label": "Show article navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_related_articles",
+      "default": true,
+      "label": "Show related articles"
+    },
+    {
+      "type": "text",
+      "id": "related_title",
+      "default": "Related articles",
+      "label": "Related articles title"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    }
+  ]
+}
+{% endschema %}

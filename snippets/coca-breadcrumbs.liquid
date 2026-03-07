@@ -1,0 +1,39 @@
+{%- comment -%}
+  Coca Breadcrumbs Snippet
+  Auto-detects context: product, collection, article, page, blog
+  Usage: {%- render 'coca-breadcrumbs' -%}
+{%- endcomment -%}
+
+<nav class="coca-breadcrumbs" aria-label="Breadcrumb">
+  <a href="{{ routes.root_url }}" class="coca-breadcrumbs__link">HOME</a>
+
+  {%- if template.name == 'product' -%}
+    {%- if collection -%}
+      <span class="coca-breadcrumbs__separator" aria-hidden="true">/</span>
+      <a href="{{ collection.url }}" class="coca-breadcrumbs__link">{{ collection.title | upcase }}</a>
+    {%- endif -%}
+    <span class="coca-breadcrumbs__separator" aria-hidden="true">/</span>
+    <span class="coca-breadcrumbs__current" aria-current="page">{{ product.title | upcase }}</span>
+
+  {%- elsif template.name == 'collection' -%}
+    <span class="coca-breadcrumbs__separator" aria-hidden="true">/</span>
+    <span class="coca-breadcrumbs__current" aria-current="page">{{ collection.title | upcase }}</span>
+
+  {%- elsif template.name == 'article' -%}
+    {%- if blog -%}
+      <span class="coca-breadcrumbs__separator" aria-hidden="true">/</span>
+      <a href="{{ blog.url }}" class="coca-breadcrumbs__link">{{ blog.title | upcase }}</a>
+    {%- endif -%}
+    <span class="coca-breadcrumbs__separator" aria-hidden="true">/</span>
+    <span class="coca-breadcrumbs__current" aria-current="page">{{ article.title | upcase }}</span>
+
+  {%- elsif template.name == 'blog' -%}
+    <span class="coca-breadcrumbs__separator" aria-hidden="true">/</span>
+    <span class="coca-breadcrumbs__current" aria-current="page">{{ blog.title | upcase }}</span>
+
+  {%- elsif template.name == 'page' -%}
+    <span class="coca-breadcrumbs__separator" aria-hidden="true">/</span>
+    <span class="coca-breadcrumbs__current" aria-current="page">{{ page.title | upcase }}</span>
+
+  {%- endif -%}
+</nav>

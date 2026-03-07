@@ -1,0 +1,672 @@
+/* ============================================
+   Coca Product Page Style - Custom CSS
+   ============================================ */
+
+/* Product Page Container */
+.coca-product {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 40px 1.5rem;
+  box-sizing: border-box;
+}
+
+.coca-product__spu-top {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #666;
+  margin: 0 0 10px;
+}
+
+.coca-product__spu-label {
+  color: #999;
+}
+
+.coca-product__spu-value {
+  color: #333;
+}
+
+.coca-product__layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 60px;
+  min-width: 0;
+}
+
+/* Product Gallery */
+.coca-product__gallery {
+  position: relative;
+  min-width: 0;
+}
+
+.coca-product__main-image {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f5f5f5;
+  position: relative;
+}
+
+.coca-product__main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: opacity 0.2s;
+}
+
+/* 大图左右箭头 */
+.coca-product__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s;
+}
+
+.coca-product__arrow:hover {
+  background: #fff;
+}
+
+.coca-product__arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+.coca-product__arrow--prev { left: 10px; }
+.coca-product__arrow--next { right: 10px; }
+
+/* 缩略图外层（可滚动） */
+.coca-product__thumbnail-wrap {
+  position: relative;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.coca-product__thumbnail-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 4px;
+}
+
+.coca-product__thumbnail-list::-webkit-scrollbar {
+  display: none;
+}
+
+.coca-product__thumbnail {
+  width: 68px;
+  height: 88px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+
+.coca-product__thumbnail.active {
+  border-color: #333;
+}
+
+.coca-product__thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Product Info */
+.coca-product__info {
+  padding-top: 20px;
+  min-width: 0;
+}
+
+/* Brand Tag */
+.coca-product__brand {
+  display: inline-block;
+  border: 1px solid #333;
+  padding: 4px 12px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+/* Product Title */
+.coca-product__title {
+  font-size: 18px;
+  font-weight: 400;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Price */
+.coca-product__price {
+  font-size: 26px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.coca-product__price-tax {
+  font-size: 12px;
+  color: #999;
+  font-weight: 400;
+}
+
+/* Variant Selectors */
+.coca-product__variants {
+  margin-bottom: 30px;
+}
+
+.coca-product__variant-group {
+  margin-bottom: 20px;
+}
+
+.coca-product__variant-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* Color Swatches */
+.coca-product__color-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.coca-product__color-swatch {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  background: #f5f5f5;
+  transition: border-color 0.2s;
+}
+
+.coca-product__color-swatch:hover {
+  border-color: #999;
+}
+
+.coca-product__color-swatch.active {
+  border-color: #333;
+}
+
+.coca-product__color-swatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* 无图片时的兜底色块 */
+.coca-product__color-swatch-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #fff;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* Size Options */
+.coca-product__size-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.coca-product__size-btn {
+  min-width: 50px;
+  height: 40px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 15px;
+}
+
+.coca-product__size-btn:hover {
+  border-color: #333;
+}
+
+.coca-product__size-btn.active {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+.coca-product__size-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* Size Guide Link */
+.coca-product__size-guide {
+  font-size: 12px;
+  color: #666;
+  text-decoration: underline;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+/* Quantity & Add to Cart */
+.coca-product__actions {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.coca-product__quantity {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  height: 50px;
+}
+
+.coca-product__quantity-btn {
+  width: 40px;
+  height: 100%;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #333;
+}
+
+.coca-product__quantity-input {
+  width: 50px;
+  height: 100%;
+  border: none;
+  text-align: center;
+  font-size: 14px;
+}
+
+.coca-product__add-cart {
+  flex: 1;
+  height: 50px;
+  background: #333;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.coca-product__add-cart:hover {
+  background: #555;
+}
+
+.coca-product__add-cart:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+/* Wishlist Button */
+.coca-product__wishlist {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coca-product__wishlist svg {
+  width: 22px;
+  height: 22px;
+  stroke: #333;
+  fill: none;
+}
+
+.coca-product__wishlist:hover svg,
+.coca-product__wishlist--active svg {
+  fill: #333;
+}
+
+/* Product Meta */
+.coca-product__meta {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 30px;
+}
+
+/* Accordion Sections */
+.coca-product__accordion {
+  border-top: 1px solid #e5e5e5;
+}
+
+.coca-product__accordion-item {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.coca-product__accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 0;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.coca-product__accordion-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  color: #666;
+  transition: transform 0.2s ease;
+}
+
+.coca-product__accordion-toggle .icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  display: block;
+}
+
+.coca-product__accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.coca-product__accordion-item.active .coca-product__accordion-content {
+  max-height: 4000px;
+  padding-bottom: 20px;
+}
+
+.coca-product__accordion-item.active .coca-product__accordion-toggle {
+  transform: rotate(180deg);
+}
+
+.coca-product__accordion-body {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.8;
+}
+
+.coca-product__size-pics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.coca-product__size-pic {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid #eee;
+}
+
+.coca-product__spec-list {
+  margin: 0;
+}
+
+.coca-product__spec-row {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px dashed #e6e6e6;
+}
+
+.coca-product__spec-row:last-child {
+  border-bottom: 0;
+}
+
+.coca-product__spec-row dt {
+  margin: 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.coca-product__spec-row dd {
+  margin: 0;
+  word-break: break-word;
+}
+
+/* Shipping Info */
+.coca-product__shipping {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f9f9f9;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.8;
+}
+
+.coca-product__shipping-title {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Share Buttons */
+.coca-product__share {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.coca-product__share .coca-share__buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.coca-product__share-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  cursor: pointer;
+}
+
+.coca-product__share-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: #333;
+}
+
+/* Related Products */
+.coca-related {
+  max-width: var(--page-width);
+  margin: 80px auto;
+  padding: 0 1.5rem;
+}
+
+.coca-related__title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  margin-bottom: 40px;
+  color: #333;
+}
+
+.coca-related__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* Breadcrumbs */
+.coca-breadcrumbs {
+  max-width: var(--page-width);
+  margin: 20px auto;
+  padding: 0 1.5rem;
+  font-size: 12px;
+  color: #999;
+}
+
+@media screen and (min-width: 750px) {
+  .coca-product,
+  .coca-related,
+  .coca-breadcrumbs {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+.coca-breadcrumbs a {
+  color: #666;
+  text-decoration: none;
+}
+
+.coca-breadcrumbs a:hover {
+  color: #333;
+}
+
+.coca-breadcrumbs__separator {
+  margin: 0 8px;
+}
+
+/* Responsive */
+@media screen and (max-width: 989px) {
+  .coca-product {
+    padding: 8px 15px 20px;
+  }
+  
+  .coca-product__layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .coca-product__gallery {
+    order: 1;
+  }
+  
+  .coca-product__info {
+    order: 2;
+    padding-top: 0;
+  }
+  
+  .coca-product__main-image {
+    aspect-ratio: 1 / 1;
+  }
+
+  .coca-product__arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .coca-product__thumbnail {
+    width: 56px;
+    height: 72px;
+  }
+  
+  .coca-product__title {
+    font-size: 16px;
+  }
+  
+  .coca-product__price {
+    font-size: 30px;
+  }
+  
+  .coca-product__actions {
+    position: static;
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 0;
+    margin: 0 0 20px;
+    border-top: 0;
+    z-index: auto;
+  }
+  
+  .coca-related {
+    margin: 40px auto 100px;
+    padding: 0 15px;
+  }
+  
+  .coca-related__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .coca-breadcrumbs {
+    padding: 0 15px;
+    font-size: 11px;
+    margin: 10px auto 6px;
+  }
+}
+
+/* Sold Out Badge */
+.coca-product__badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: #999;
+  color: #fff;
+  font-size: 11px;
+  padding: 6px 12px;
+  letter-spacing: 1px;
+}
+
+.coca-product__badge--new {
+  background: #d4b896;
+}
+
+/* Variant Selector Dropdown (Mobile) */
+.coca-product__variant-select {
+  width: 100%;
+  height: 45px;
+  border: 1px solid #ccc;
+  padding: 0 15px;
+  font-size: 14px;
+  background: #fff;
+  margin-bottom: 15px;
+}
+
+/* Notification */
+.coca-product__notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #333;
+  color: #fff;
+  padding: 15px 25px;
+  font-size: 14px;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+}
+
+.coca-product__notification.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}

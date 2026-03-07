@@ -1,0 +1,147 @@
+{{ 'cc-ranking.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+{%- unless section.settings.quick_add == 'none' -%}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+{%- endunless -%}
+
+{%- if section.settings.quick_add == 'standard' -%}
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- if section.settings.quick_add == 'bulk' -%}
+  <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% comment %}
+  Coca Ranking (Collection) for Dawn
+  File: sections/coca-ranking.liquid
+
+  - Select a collection
+  - Desktop: 4 items (hide 5-6)
+  - Mobile: 3 columns, show up to 6 items (2 rows)
+{% endcomment %}
+
+{% assign col = section.settings.collection %}
+
+<section class="cc-ranking cc-ranking--dawn" data-cc-ranking>
+  <div class="page-width">
+    <div class="cc-ranking__head">
+      <h2 class="cc-ranking__title">{{ section.settings.heading }}</h2>
+
+      {% assign view_link = section.settings.view_all_link %}
+      {% if view_link == blank and col != blank %}
+        {% assign view_link = col.url %}
+      {% endif %}
+
+      {% if view_link != blank %}
+        <a class="cc-ranking__viewall cc-ranking__viewall--desktop" href="{{ view_link }}">
+          <span>{{ section.settings.view_all_label }}</span>
+          <span class="cc-ranking__arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      {% endif %}
+    </div>
+
+    {% if col != blank and col.products.size > 0 %}
+      <div class="cc-ranking__grid">
+        {% for product in col.products limit: 6 %}
+          {% assign rank = forloop.index %}
+          <div class="cc-ranking__item cc-ranking__item--{{ rank }}">
+            <div class="cc-ranking__badge cc-ranking__badge--{{ rank }}">{{ rank }}</div>
+
+            {% render 'card-product-coca',
+              card_product: product,
+              product_card_product: product,
+              media_aspect_ratio: section.settings.image_ratio,
+              image_shape: section.settings.image_shape,
+              lazy_load: true,
+              show_secondary_image: section.settings.show_secondary_image,
+              show_vendor: false,
+              show_rating: false,
+              section_id: section.id,
+              quick_add: section.settings.quick_add
+            %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="cc-ranking__empty">
+        Please select a collection that has visible products.
+      </div>
+    {% endif %}
+
+    {% if view_link != blank %}
+      <div class="cc-ranking__viewallwrap cc-ranking__viewallwrap--mobile">
+        <a class="cc-ranking__viewall cc-ranking__viewall--mobile" href="{{ view_link }}">
+          <span>{{ section.settings.view_all_label }}</span>
+          <span class="cc-ranking__arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Coca Ranking",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Ranking" },
+
+    { "type": "collection", "id": "collection", "label": "Select collection" },
+
+    { "type": "url", "id": "view_all_link", "label": "View all link (optional)" },
+    { "type": "text", "id": "view_all_label", "label": "View all label", "default": "View all" },
+
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "square", "label": "Square" },
+        { "value": "adapt", "label": "Adapt to image" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "Image shape",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "arch", "label": "Arch" },
+        { "value": "blob", "label": "Blob" },
+        { "value": "chevronleft", "label": "Chevron left" },
+        { "value": "chevronright", "label": "Chevron right" },
+        { "value": "diamond", "label": "Diamond" },
+        { "value": "parallelogram", "label": "Parallelogram" },
+        { "value": "round", "label": "Round" }
+      ],
+      "default": "default"
+    },
+    { "type": "checkbox", "id": "show_secondary_image", "label": "Show secondary image on hover", "default": false },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "label": "Quick add",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "bulk", "label": "Bulk" }
+      ],
+      "default": "none"
+    }
+  ],
+  "presets": [
+    { "name": "Coca Ranking" }
+  ]
+}
+{% endschema %}
+

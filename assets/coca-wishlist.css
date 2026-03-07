@@ -1,0 +1,180 @@
+.coca-wishlist-page__inner {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@media screen and (min-width: 750px) {
+  .coca-wishlist-page__inner {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+.coca-wishlist-page__title {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+.coca-wishlist-page__meta {
+  margin: 10px 0 28px;
+  font-size: 13px;
+  color: #666;
+}
+
+.coca-wishlist-page__loading {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.coca-wishlist-page__empty {
+  padding: 24px 0;
+  text-align: left;
+}
+
+.coca-wishlist-page__empty p {
+  margin: 0 0 14px;
+  color: #555;
+  font-size: 14px;
+}
+
+.coca-wishlist-page__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid #111;
+  color: #111;
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.coca-wishlist-page__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.coca-wishlist-card {
+  position: relative;
+}
+
+.coca-wishlist-card__image-wrap {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #f7f3ef;
+}
+
+.coca-wishlist-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.28s ease, opacity 0.2s ease;
+}
+
+.coca-wishlist-card__image--secondary {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.coca-wishlist-card:hover .coca-wishlist-card__image--secondary {
+  opacity: 1;
+}
+
+.coca-wishlist-card:hover .coca-wishlist-card__image:not(.coca-wishlist-card__image--secondary) {
+  transform: scale(1.01);
+}
+
+.coca-wishlist-card__info {
+  padding: 10px 2px 0;
+}
+
+.coca-wishlist-card__heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 8px;
+  align-items: start;
+}
+
+.coca-wishlist-card__title {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 400;
+}
+
+.coca-wishlist-card__title a {
+  color: #333;
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.35em * 2);
+}
+
+.coca-wishlist-card__heart {
+  border: 0;
+  background: none;
+  padding: 0;
+  margin-top: 2px;
+  color: #333;
+  cursor: pointer;
+}
+
+.coca-wishlist-card__heart svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  fill: #111;
+}
+
+.coca-wishlist-card__price {
+  margin: 6px 0 0;
+  font-size: 22px;
+  line-height: 1.15;
+  font-weight: 500;
+  color: #333;
+}
+
+.coca-wishlist-card__price--sale {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.coca-wishlist-card__price--sale s {
+  color: #888;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+@media screen and (max-width: 989px) {
+  .coca-wishlist-page__title {
+    font-size: 24px;
+  }
+
+  .coca-wishlist-page__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+  }
+
+  .coca-wishlist-card__title {
+    font-size: 12px;
+  }
+
+  .coca-wishlist-card__price {
+    font-size: 20px;
+  }
+}

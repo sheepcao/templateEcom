@@ -1,0 +1,567 @@
+/* ============================================
+   Coca.jp Header Style - Custom CSS
+   ============================================ */
+
+/* Announcement Bar - 顶部公告栏 (coca 风格金色背景) */
+/* 默认金色背景 */
+.announcement-bar-section .utility-bar {
+  background-color: #b8a07a;
+}
+
+/* 确保自定义背景色填满整个公告栏区域 */
+.announcement-bar-section .slideshow__slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+}
+
+.announcement-bar-section .announcement-bar {
+  width: 100%;
+}
+
+.announcement-bar-section .announcement-bar__announcement {
+  width: 100%;
+}
+
+.announcement-bar-section .announcement-bar__message {
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+.announcement-bar-section .announcement-bar__message,
+.announcement-bar-section .announcement-bar__message a {
+  color: #fff;
+}
+
+.announcement-bar-section .announcement-bar__message a {
+  text-decoration: none;
+}
+
+/* Header Wrapper */
+.coca-header-wrapper {
+  background-color: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  position: relative;
+}
+
+.coca-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 1.5rem;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Logo */
+.coca-logo {
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: #000;
+  text-decoration: none;
+  font-family: serif;
+}
+
+.coca-logo:hover {
+  color: #000;
+}
+
+/* Navigation */
+.coca-nav {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.coca-nav__item-wrapper {
+  position: static;
+  padding: 20px 0;
+}
+
+.coca-nav__item {
+  font-size: 13px;
+  color: #333;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding: 5px 0;
+  display: inline-block;
+}
+
+.coca-nav__item:hover {
+  color: #000;
+}
+
+.coca-nav__item--has-dropdown::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 5px;
+  vertical-align: middle;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #333;
+}
+
+/* Header Icons & Search */
+.coca-header__right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.coca-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.coca-search-box input {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  padding: 5px 30px 5px 10px;
+  font-size: 12px;
+  width: 180px;
+  outline: none;
+  background: transparent;
+}
+
+.coca-search-box input::placeholder {
+  color: #999;
+}
+
+.coca-search-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coca-search-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: #333;
+}
+
+.coca-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.coca-icon-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: #333;
+  fill: none;
+}
+
+.coca-icon-btn:hover svg {
+  stroke: #000;
+}
+
+/* Cart Badge */
+.coca-cart-count {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #000;
+  color: #fff;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   Mega Menu - 大型下拉菜单
+   ============================================ */
+.coca-mega-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #e5e5e5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.coca-nav__item-wrapper:hover .coca-mega-menu,
+.coca-nav__item-wrapper:focus-within .coca-mega-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.coca-mega-menu__inner {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 40px 1.5rem;
+  display: flex;
+  gap: 60px;
+}
+
+.coca-mega-menu__section {
+  min-width: 120px;
+}
+
+.coca-mega-menu__section--featured {
+  border-right: 1px solid #e5e5e5;
+  padding-right: 40px;
+  margin-right: 20px;
+}
+
+.coca-mega-menu__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 15px;
+  letter-spacing: 0.5px;
+}
+
+.coca-mega-menu__title-link {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 15px;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+}
+
+.coca-mega-menu__title-link:hover {
+  color: #222;
+}
+
+.coca-mega-menu__link {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  text-decoration: none;
+  padding: 6px 0;
+  transition: color 0.2s;
+}
+
+.coca-mega-menu__link:hover {
+  color: #000;
+}
+
+.coca-mega-menu__link--all {
+  font-weight: 500;
+  color: #333;
+}
+
+/* ============================================
+   Mobile Drawer - 移动端侧边栏
+   ============================================ */
+.coca-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 9998;
+}
+
+.coca-drawer-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.coca-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 100vh;
+  background: #fff;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+.coca-drawer.active {
+  transform: translateX(0);
+}
+
+.coca-drawer__header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  padding: 15px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 10000;
+}
+
+.coca-drawer__close {
+  position: relative;
+  z-index: 10001;
+  pointer-events: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.coca-drawer__close svg {
+  width: 24px;
+  height: 24px;
+  stroke: #333;
+  pointer-events: none;
+}
+
+/* Drawer Buttons */
+.coca-drawer__buttons {
+  padding: 20px 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.coca-drawer__btn {
+  padding: 12px 15px;
+  font-size: 12px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.coca-drawer__btn--primary {
+  background: #333;
+  color: #fff;
+  border: 1px solid #333;
+}
+
+.coca-drawer__btn--secondary {
+  background: #999;
+  color: #fff;
+  border: 1px solid #999;
+}
+
+.coca-drawer__btn--outline {
+  background: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+/* Drawer Navigation */
+.coca-drawer__nav {
+  padding: 0 15px;
+}
+
+.coca-drawer__category {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.coca-drawer__category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  cursor: pointer;
+}
+
+.coca-drawer__category-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  text-decoration: none;
+  flex: 1;
+}
+
+.coca-drawer__category-title--button {
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.coca-drawer__toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: #666;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.coca-drawer__toggle .icon {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.coca-drawer__category.expanded .coca-drawer__toggle {
+  transform: rotate(180deg);
+}
+
+.coca-drawer__submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.coca-drawer__category.expanded .coca-drawer__submenu {
+  max-height: 500px;
+}
+
+.coca-drawer__submenu-list {
+  padding: 0 0 15px 15px;
+  list-style: none;
+}
+
+.coca-drawer__submenu-item {
+  padding: 8px 0;
+}
+
+.coca-drawer__submenu-link {
+  font-size: 13px;
+  color: #666;
+  text-decoration: none;
+}
+
+.coca-drawer__submenu-link:hover {
+  color: #000;
+}
+
+/* ============================================
+   Mobile Header
+   ============================================ */
+.coca-header--mobile {
+  display: none;
+  padding: 12px 15px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coca-mobile-menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.coca-mobile-menu-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: #333;
+}
+
+.coca-mobile-logo {
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: #000;
+  text-decoration: none;
+  font-family: serif;
+}
+
+.coca-mobile-icons {
+  display: flex;
+  gap: 10px;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media screen and (max-width: 989px) {
+  .coca-header {
+    display: none;
+  }
+  
+  .coca-header--mobile {
+    display: flex;
+  }
+
+  .coca-header-wrapper--mobile.is-sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  body.coca-mobile-header-has-sticky {
+    padding-top: var(--coca-mobile-header-height, 56px);
+  }
+  
+  .coca-announcement-bar {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .coca-header {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+
+  .coca-mega-menu__inner {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .coca-drawer,
+  .coca-drawer-overlay,
+  .coca-header--mobile {
+    display: none !important;
+  }
+}
+
+/* Utility Classes */
+.coca-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

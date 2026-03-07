@@ -1,0 +1,46 @@
+{%- comment -%}
+  Coca Share Buttons Snippet
+  Usage:
+    {%- render 'coca-share-buttons',
+        share_url: product.url,
+        share_title: product.title,
+        show_label: false,
+        button_class: 'coca-product__share-btn'
+    -%}
+  Params:
+    share_url   {String}  - URL to share (required)
+    share_title {String}  - Title to share (optional)
+    show_label  {Boolean} - Whether to show "SHARE" text label (default: false)
+    button_class {String} - CSS class for each button (default: 'coca-share__btn')
+    wrapper_class {String} - CSS class for the wrapper div
+{%- endcomment -%}
+
+{%- liquid
+  assign btn_class = button_class | default: 'coca-share__btn'
+-%}
+
+<div class="coca-share {{ wrapper_class }}">
+  {%- if show_label -%}
+    <div class="coca-share__label">SHARE</div>
+  {%- endif -%}
+  <div class="coca-share__buttons">
+    <button type="button"
+            class="{{ btn_class }}"
+            onclick="cocaShare('twitter', '{{ share_url | escape }}', '{{ share_title | escape }}')"
+            aria-label="Share on Twitter">
+      {%- render 'coca-icon', icon: 'twitter' -%}
+    </button>
+    <button type="button"
+            class="{{ btn_class }}"
+            onclick="cocaShare('facebook', '{{ share_url | escape }}', '{{ share_title | escape }}')"
+            aria-label="Share on Facebook">
+      {%- render 'coca-icon', icon: 'facebook' -%}
+    </button>
+    <button type="button"
+            class="{{ btn_class }}"
+            onclick="cocaShare('line', '{{ share_url | escape }}', '{{ share_title | escape }}')"
+            aria-label="Share on LINE">
+      {%- render 'coca-icon', icon: 'line' -%}
+    </button>
+  </div>
+</div>

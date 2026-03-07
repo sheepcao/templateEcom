@@ -1,0 +1,264 @@
+{
+  "sections": {
+    "image_banner": {
+      "type": "image-banner",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Browse our latest products",
+            "heading_size": "h0"
+          }
+        },
+        "button": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Shop all",
+            "button_link_1": "shopify://collections/all",
+            "button_style_secondary_1": true,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "button"
+      ],
+      "disabled": true,
+      "settings": {
+        "image": "shopify://shop_images/ribpants_sp_eae813a6-1897-438b-b5e4-c9cd2878600b.webp",
+        "image_2": "shopify://shop_images/56067912-2fa6-487a-a831-08d61b120818.jpg_processed.jpg",
+        "image_overlay_opacity": 40,
+        "image_height": "large",
+        "image_behavior": "none",
+        "desktop_content_position": "bottom-center",
+        "desktop_content_alignment": "center",
+        "show_text_box": false,
+        "color_scheme": "scheme-3",
+        "stack_images_on_mobile": false,
+        "mobile_content_alignment": "center",
+        "show_text_below": false
+      }
+    },
+    "coca_hero_slider_a9kyTJ": {
+      "type": "coca-hero-slider",
+      "blocks": {
+        "slide_7KdriF": {
+          "type": "slide",
+          "settings": {
+            "image_desktop": "shopify://shop_images/PC_00956dd2-db8b-4ee4-a7cb-87a001da1345.jpg",
+            "image_mobile": "shopify://shop_images/SP_c547b215-f65a-42f0-bcc4-4e617c8d613c.webp",
+            "desktop_ratio": "16/6",
+            "mobile_ratio": "3/4",
+            "kicker": "Fit by height",
+            "subheading": "Choose your inseam length",
+            "heading": "Ultra Stretch Skinny Pants",
+            "note": "MADE FOR EVERY MOMENT",
+            "text_align_desktop": "left",
+            "text_align_mobile": "bottom-left",
+            "button_label": "",
+            "link": ""
+          }
+        },
+        "slide_GWrz4q": {
+          "type": "slide",
+          "settings": {
+            "image_desktop": "shopify://shop_images/ribpants_pc.webp",
+            "image_mobile": "shopify://shop_images/ribpants_sp.webp",
+            "desktop_ratio": "16/6",
+            "mobile_ratio": "3/4",
+            "kicker": "Fit by height",
+            "subheading": "Choose your inseam length",
+            "heading": "Ultra Stretch Skinny Pants",
+            "note": "MADE FOR EVERY MOMENT",
+            "text_align_desktop": "left",
+            "text_align_mobile": "bottom-left",
+            "button_label": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "slide_7KdriF",
+        "slide_GWrz4q"
+      ],
+      "name": "Coca Hero Slider",
+      "settings": {
+        "show_dots": true
+      }
+    },
+    "coca_mobile_quick_links_M3p2ad": {
+      "type": "coca-mobile-quick-links",
+      "settings": {
+        "label_1": "WOMEN",
+        "link_1": "",
+        "label_2": "MEN",
+        "link_2": "",
+        "label_3": "KIDS",
+        "link_3": "",
+        "label_4": "LIVE",
+        "link_4": "",
+        "label_5": "SNAP",
+        "link_5": ""
+      }
+    },
+    "coca_news_carousel_TLkGFk": {
+      "type": "coca-news-carousel",
+      "blocks": {
+        "news_item_jcJLNm": {
+          "type": "news_item",
+          "settings": {
+            "article": "news/韓国への配送再開のお知らせ",
+            "custom_title": "",
+            "custom_date": ""
+          }
+        },
+        "news_item_R6LEYk": {
+          "type": "news_item",
+          "settings": {
+            "article": "news/ベトナムへの配送終了のお知らせ",
+            "custom_title": "",
+            "custom_date": ""
+          }
+        },
+        "news_item_6yywk6": {
+          "type": "news_item",
+          "settings": {
+            "article": "news/マカオへの配送終了のお知らせ2025-06-24",
+            "custom_title": "",
+            "custom_date": ""
+          }
+        }
+      },
+      "block_order": [
+        "news_item_jcJLNm",
+        "news_item_R6LEYk",
+        "news_item_6yywk6"
+      ],
+      "name": "Coca news carousel",
+      "settings": {
+        "heading": "NEWS",
+        "show_date": true,
+        "color_scheme": "",
+        "padding_top": 12,
+        "padding_bottom": 12
+      }
+    },
+    "coca_blog_grid_pk9awB": {
+      "type": "coca-blog-grid",
+      "blocks": {
+        "collection_XawQdx": {
+          "type": "collection",
+          "settings": {
+            "collection": "新品上市",
+            "custom_title": "",
+            "custom_description": "新品上市"
+          }
+        },
+        "article_4BkiRV": {
+          "type": "article",
+          "settings": {
+            "article": "index/特別な日を-華やかに",
+            "custom_title": "",
+            "custom_description": ""
+          }
+        },
+        "article_3wwhLR": {
+          "type": "article",
+          "settings": {
+            "article": "index/お手入れ簡単",
+            "custom_title": "",
+            "custom_description": ""
+          }
+        },
+        "article_DMtMkC": {
+          "type": "article",
+          "settings": {
+            "article": "index/新シルエット登場✨",
+            "custom_title": "",
+            "custom_description": ""
+          }
+        },
+        "article_kpDTJX": {
+          "type": "article",
+          "settings": {
+            "article": "index/気分で選ぶ-ロゴと無地🍃",
+            "custom_title": "",
+            "custom_description": ""
+          }
+        },
+        "article_HcGJ7y": {
+          "type": "article",
+          "settings": {
+            "article": "index/採用情報",
+            "custom_title": "",
+            "custom_description": ""
+          }
+        }
+      },
+      "block_order": [
+        "collection_XawQdx",
+        "article_4BkiRV",
+        "article_3wwhLR",
+        "article_DMtMkC",
+        "article_kpDTJX",
+        "article_HcGJ7y"
+      ],
+      "name": "Coca blog grid (6)",
+      "settings": {
+        "show_heading": false,
+        "heading": "FEATURE",
+        "show_subtitle": true,
+        "subtitle_truncate": 60,
+        "color_scheme": "",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "coca_ranking_czRCw4": {
+      "type": "coca-ranking",
+      "name": "Coca Ranking (manual)",
+      "settings": {
+        "heading": "Ranking",
+        "collection": "热销",
+        "view_all_link": "shopify://collections/热销",
+        "view_all_label": "View all",
+        "image_ratio": "portrait",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "quick_add": "none"
+      }
+    },
+    "coca_category_carousel_nmY9hT": {
+      "type": "coca-category-carousel",
+      "name": "Coca Carousel",
+      "settings": {
+        "heading": "上衣",
+        "heading_color": "#000000",
+        "collection": "上衣",
+        "view_all_link": "shopify://collections/上衣",
+        "view_all_label": "View all",
+        "image_ratio": "portrait",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "quick_add": "none",
+        "show_badges": true,
+        "badge_tags": "NEW,UNISEX",
+        "global_badge_color": "#d7c35a"
+      }
+    }
+  },
+  "order": [
+    "image_banner",
+    "coca_mobile_quick_links_M3p2ad",
+    "coca_hero_slider_a9kyTJ",
+    "coca_news_carousel_TLkGFk",
+    "coca_blog_grid_pk9awB",
+    "coca_ranking_czRCw4",
+    "coca_category_carousel_nmY9hT"
+  ]
+}
+
+

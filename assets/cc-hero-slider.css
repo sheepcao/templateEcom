@@ -1,0 +1,201 @@
+/* ============================================
+   Cocacoca Hero Slider - cc-hero-slider.css
+   ============================================ */
+
+.cc-hero {
+  position: relative;
+}
+
+.cc-hero__viewport {
+  position: relative;
+  overflow: hidden;
+  background: var(--coca-color-bg-gray, #f3f3f3);
+}
+
+.cc-hero__track {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+}
+.cc-hero__track::-webkit-scrollbar { display: none; }
+.cc-hero__track.is-dragging { cursor: grabbing; }
+
+.cc-hero__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+.cc-hero__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Different aspect ratios per device */
+.cc-hero__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--cc-hero-ratio-desktop, 16/6);
+  overflow: hidden;
+}
+@media (max-width: 749px) {
+  .cc-hero__media {
+    aspect-ratio: var(--cc-hero-ratio-mobile, 3/4);
+  }
+}
+
+.cc-hero__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cc-hero__img--mobile { display: none; }
+@media (max-width: 749px) {
+  .cc-hero__img--desktop { display: none; }
+  .cc-hero__img--mobile { display: block; }
+}
+
+/* Overlay */
+.cc-hero__overlay {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.cc-hero__text {
+  position: absolute;
+  max-width: 62%;
+  color: #111;
+  padding: 28px 30px;
+}
+
+/* Desktop positions */
+.cc-hero__text--desktop { display: block; }
+.cc-hero__text--mobile { display: none; }
+
+@media (max-width: 749px) {
+  .cc-hero__text--desktop { display: none; }
+  .cc-hero__text--mobile {
+    display: block;
+    max-width: 88%;
+    padding: 18px 18px;
+  }
+}
+
+/* Position presets */
+.cc-hero__text--left { left: 0; top: 0; }
+.cc-hero__text--left-center { left: 0; top: 50%; transform: translateY(-50%); }
+.cc-hero__text--bottom-left { left: 0; bottom: 0; }
+
+.cc-hero__kicker {
+  display: inline-block;
+  background: rgba(255, 255, 255, .85);
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: .06em;
+  margin-bottom: 10px;
+}
+
+.cc-hero__subheading {
+  display: inline-block;
+  background: rgba(255, 255, 255, .85);
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: .06em;
+  margin-bottom: 14px;
+}
+
+.cc-hero__heading {
+  margin: 0 0 10px;
+  font-size: clamp(34px, 3.2vw, 64px);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-shadow: 0 0 0 transparent;
+}
+
+.cc-hero__note {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin-top: 6px;
+}
+
+.cc-hero__cta { margin-top: 18px; }
+.cc-hero__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, .0);
+  border: 1px solid rgba(0, 0, 0, .0);
+  font-size: 0;
+}
+
+/* Nav arrows (desktop) */
+.cc-hero__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--coca-radius-full, 999px);
+  border: 1px solid rgba(0, 0, 0, .18);
+  background: rgba(255, 255, 255, .75);
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 5;
+}
+.cc-hero__nav--prev { left: 16px; }
+.cc-hero__nav--next { right: 16px; }
+
+@media (max-width: 749px) {
+  .cc-hero__nav { display: none; }
+}
+
+/* Dots (bottom-right) */
+.cc-hero__dots {
+  position: absolute;
+  right: 18px;
+  bottom: 14px;
+  display: flex;
+  gap: 8px;
+  z-index: 6;
+}
+.cc-hero__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--coca-radius-full, 999px);
+  border: 0;
+  background: rgba(255, 255, 255, .55);
+  cursor: pointer;
+}
+.cc-hero__dot.is-active {
+  background: rgba(255, 255, 255, 1);
+}
+
+@media (max-width: 749px) {
+  .cc-hero__dots {
+    right: 14px;
+    bottom: 12px;
+  }
+  .cc-hero__kicker,
+  .cc-hero__subheading {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+  .cc-hero__heading { font-size: 36px; }
+  .cc-hero__note { font-size: 14px; }
+}

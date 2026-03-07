@@ -1,0 +1,71 @@
+{{ 'collection-coca.css' | asset_url | stylesheet_tag }}
+{{ 'card-product-coca.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign related_limit = section.settings.products_to_show | default: 4
+-%}
+
+{%- style -%}
+  .coca-related--{{ section.id }} {
+    display: block;
+    max-width: var(--page-width);
+    margin: 80px auto;
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+
+  @media screen and (min-width: 750px) {
+    .coca-related--{{ section.id }} {
+      padding-left: 5rem;
+      padding-right: 5rem;
+    }
+  }
+{%- endstyle -%}
+
+<product-recommendations
+  class="coca-related coca-related--{{ section.id }}"
+  data-url="{{ routes.product_recommendations_url }}?limit={{ related_limit }}&intent=related"
+  data-section-id="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+>
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <h2 class="coca-related__title">
+      {{ section.settings.heading | default: 'Related Products' | escape }}
+    </h2>
+    <div class="coca-related__grid">
+      {%- for related_product in recommendations.products limit: related_limit -%}
+        {%- render 'card-product-coca', product: related_product -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</product-recommendations>
+
+{% schema %}
+{
+  "name": "Coca Related Products",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Related Products"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4,
+      "label": "Products to show"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Coca Related Products"
+    }
+  ]
+}
+{% endschema %}

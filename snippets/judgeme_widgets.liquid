@@ -1,0 +1,23 @@
+{%- liquid
+  assign jdgm_product = product
+  if jdgm_product == blank and prod != blank
+    assign jdgm_product = prod
+  endif
+-%}
+
+{%- if jdgm_product != blank -%}
+  {%- case widget_type -%}
+    {%- when 'judgeme_preview_badge' -%}
+      <div class="jdgm-widget jdgm-preview-badge" data-id="{{ jdgm_product.id }}">
+        {{ jdgm_product.metafields.judgeme.badge }}
+      </div>
+    {%- when 'judgeme_review_widget' -%}
+      <div
+        class="jdgm-widget jdgm-review-widget"
+        data-id="{{ jdgm_product.id }}"
+        data-product-title="{{ jdgm_product.title | escape }}"
+      >
+        {{ jdgm_product.metafields.judgeme.widget }}
+      </div>
+  {%- endcase -%}
+{%- endif -%}

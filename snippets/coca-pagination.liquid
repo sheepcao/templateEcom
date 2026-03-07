@@ -1,0 +1,66 @@
+{%- comment -%}
+  Coca pagination snippet.
+  Usage: {% render 'coca-pagination', paginate: paginate, anchor: '' %}
+{%- endcomment -%}
+
+{{ 'component-pagination.css' | asset_url | stylesheet_tag }}
+
+{%- if paginate.parts.size > 0 -%}
+  <div class="pagination-wrapper coca-pagination-wrapper" data-page="{{ paginate.current_page }}">
+    <nav class="pagination coca-pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
+      <ul class="pagination__list coca-pagination__list list-unstyled" role="list">
+      {%- if paginate.previous -%}
+        <li>
+          <a
+            href="{{ paginate.previous.url }}{{ anchor }}"
+            class="pagination__item coca-pagination__item pagination__item--next pagination__item-arrow coca-pagination__item--arrow"
+            aria-label="{{ 'general.pagination.previous' | t }}"
+          >
+            <span class="svg-wrapper coca-pagination__icon coca-pagination__icon--prev">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </a>
+        </li>
+      {%- endif -%}
+
+      {%- for part in paginate.parts -%}
+        <li>
+          {%- if part.is_link -%}
+            <a
+              href="{{ part.url }}{{ anchor }}"
+              class="pagination__item coca-pagination__item"
+              aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+            >
+              {{- part.title -}}
+            </a>
+          {%- elsif part.title == paginate.current_page -%}
+            <span
+              class="pagination__item coca-pagination__item pagination__item--current light is-current"
+              aria-current="page"
+              aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+            >
+              {{- part.title -}}
+            </span>
+          {%- else -%}
+            <span class="pagination__item coca-pagination__item coca-pagination__item--gap">{{ part.title }}</span>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+
+      {%- if paginate.next -%}
+        <li>
+          <a
+            href="{{ paginate.next.url }}{{ anchor }}"
+            class="pagination__item coca-pagination__item pagination__item--prev pagination__item-arrow coca-pagination__item--arrow"
+            aria-label="{{ 'general.pagination.next' | t }}"
+          >
+            <span class="svg-wrapper coca-pagination__icon coca-pagination__icon--next">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </a>
+        </li>
+      {%- endif -%}
+      </ul>
+    </nav>
+  </div>
+{%- endif -%}

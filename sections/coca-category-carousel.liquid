@@ -1,0 +1,348 @@
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'cc-category-carousel.css' | asset_url | stylesheet_tag }}
+
+{%- unless section.settings.quick_add == 'none' -%}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+{%- endunless -%}
+{%- if section.settings.quick_add == 'standard' -%}
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+{%- if section.settings.quick_add == 'bulk' -%}
+  <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% comment %}
+  coca-like Category (Collection) slider for Dawn
+  - Desktop: horizontal grab-to-drag
+  - Mobile: 3 columns grid
+  - View-all link:
+    - Desktop: in header right
+    - Mobile: below products right (like ranking)
+  - Data Source: Collection or Blocks
+{% endcomment %}
+
+{%- liquid
+  assign raw_collection = section.settings.collection
+  assign col_handle = raw_collection.handle | default: raw_collection
+  assign col = collections[col_handle]
+
+  assign view_link = section.settings.view_all_link
+  if view_link == blank and col != blank
+    assign view_link = col.url
+  endif
+
+  assign badge_tags_raw = section.settings.badge_tags | default: 'NEW,UNISEX'
+  assign badge_tags_arr = badge_tags_raw | upcase | replace: '��', ',' | split: ','
+-%}
+
+<section class="cc-cat cc-cat--dawn section-{{ section.id }}" data-cc-cat>
+  <div class="page-width">
+    <div class="cc-cat__head">
+      <h2 class="cc-cat__title" style="color: {{ section.settings.heading_color }};">{{ section.settings.heading }}</h2>
+
+      {% if view_link != blank %}
+        <a class="cc-cat__viewall cc-cat__viewall--desktop" href="{{ view_link }}">
+          <span>{{ section.settings.view_all_label }}</span>
+            <span class="cc-cat__arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      {% endif %}
+    </div>
+
+    {% liquid
+      assign has_content = false
+      if section.blocks.size > 0 or col != blank and col.products.size > 0
+        assign has_content = true
+      endif
+    %}
+
+    {% if has_content %}
+      <div class="cc-cat__wrap">
+        <div class="cc-cat__track" id="ccCatTrack-{{ section.id }}" data-cc-cat-track>
+          {% assign lazy_load = false %}
+          
+          {% comment %} Render Blocks first {% endcomment %}
+          {% for block in section.blocks %}
+            {% assign product = block.settings.product %}
+            {% if lazy_load == false and forloop.index > 6 %}
+              {% assign lazy_load = true %}
+            {% endif %}
+
+            {% assign badge_text = block.settings.badge_text %}
+            {% assign badge_color = block.settings.badge_color %}
+
+            <div class="cc-cat__item" {{ block.shopify_attributes }}>
+              {% if badge_text != blank %}
+                <div class="cc-cat__badge" style="background-color: {{ badge_color }};">{{ badge_text }}</div>
+              {% endif %}
+
+              {% if product != blank %}
+                {% render 'card-product-coca',
+                  card_product: product,
+                  product_card_product: product,
+                  media_aspect_ratio: section.settings.image_ratio,
+                  image_shape: section.settings.image_shape,
+                  lazy_load: lazy_load,
+                  show_secondary_image: section.settings.show_secondary_image,
+                  show_vendor: false,
+                  show_rating: false,
+                  section_id: section.id,
+                  quick_add: section.settings.quick_add
+                %}
+              {% else %}
+                 <div class="cc-cat__item-placeholder">
+                   {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                   <div class="center" style="font-size: 12px; padding: 8px;">Select Product</div>
+                 </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          {% comment %} Render Collection products if blocks are fewer than limit or if intended as additive {% endcomment %}
+          {% if col != blank %}
+            {% for product in col.products limit: 9 %}
+              {% if lazy_load == false and forloop.index > 6 %}
+                {% assign lazy_load = true %}
+              {% endif %}
+
+              {% assign badge_text = '' %}
+              {% if section.settings.show_badges %}
+                {% for tag in product.tags %}
+                  {% assign tag_up = tag | upcase | strip %}
+                  {% for allow in badge_tags_arr %}
+                    {% assign allow_clean = allow | strip %}
+                    {% if allow_clean != blank and tag_up == allow_clean %}
+                      {% assign badge_text = allow_clean %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+                  {% if badge_text != '' %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+
+              <div class="cc-cat__item">
+                {% if badge_text != '' %}
+                  <div class="cc-cat__badge" style="background-color: {{ section.settings.global_badge_color }};">{{ badge_text }}</div>
+                {% endif %}
+
+                {% render 'card-product-coca',
+                  card_product: product,
+                  product_card_product: product,
+                  media_aspect_ratio: section.settings.image_ratio,
+                  image_shape: section.settings.image_shape,
+                  lazy_load: lazy_load,
+                  show_secondary_image: section.settings.show_secondary_image,
+                  show_vendor: false,
+                  show_rating: false,
+                  section_id: section.id,
+                  quick_add: section.settings.quick_add
+                %}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <button class="cc-cat__btn cc-cat__btn--prev" type="button" aria-label="Previous" data-cc-cat-prev>
+          <span aria-hidden="true">&lsaquo;</span>
+        </button>
+        <button class="cc-cat__btn cc-cat__btn--next" type="button" aria-label="Next" data-cc-cat-next>
+          <span aria-hidden="true">&rsaquo;</span>
+        </button>
+      </div>
+
+      {% if view_link != blank %}
+        <div class="cc-cat__viewallwrap cc-cat__viewallwrap--mobile">
+          <a class="cc-cat__viewall cc-cat__viewall--mobile" href="{{ view_link }}">
+            <span>{{ section.settings.view_all_label }}</span>
+            <span class="cc-cat__arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <div class="cc-cat__empty">
+        Please select a collection or add product blocks.
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+
+
+
+<script>
+  (() => {
+    const section = document.querySelector('.section-{{ section.id }}[data-cc-cat]');
+    if (!section) return;
+
+    const track = section.querySelector('[data-cc-cat-track]');
+    if (!track) return;
+
+    const btnPrev = section.querySelector('[data-cc-cat-prev]');
+    const btnNext = section.querySelector('[data-cc-cat-next]');
+
+    const scrollByCard = (dir) => {
+      const first = track.querySelector('.cc-cat__item');
+      const cardW = first ? first.getBoundingClientRect().width : 240;
+      const gap = 22;
+      track.scrollBy({ left: dir * (cardW + gap) * 2, behavior: 'smooth' });
+    };
+
+    btnPrev && btnPrev.addEventListener('click', () => scrollByCard(-1));
+    btnNext && btnNext.addEventListener('click', () => scrollByCard(1));
+
+    let isDown = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+    let moved = 0;
+
+    const onDown = (e) => {
+      if (window.matchMedia('(max-width: 749px)').matches) return;
+      isDown = true;
+      moved = 0;
+      track.classList.add('is-dragging');
+      startX = (e.pageX || (e.touches && e.touches[0].pageX) || 0);
+      startScrollLeft = track.scrollLeft;
+    };
+
+    const onMove = (e) => {
+      if (!isDown) return;
+      const x = (e.pageX || (e.touches && e.touches[0].pageX) || 0);
+      const walk = x - startX;
+      moved = Math.max(moved, Math.abs(walk));
+      track.scrollLeft = startScrollLeft - walk;
+      e.preventDefault();
+    };
+
+    const onUp = () => {
+      if (!isDown) return;
+      isDown = false;
+      track.classList.remove('is-dragging');
+    };
+
+    track.addEventListener('click', (e) => {
+      if (moved > 6) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+
+    track.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove, { passive: false });
+    window.addEventListener('mouseup', onUp);
+
+    track.addEventListener('touchstart', onDown, { passive: true });
+    track.addEventListener('touchmove', onMove, { passive: false });
+    track.addEventListener('touchend', onUp);
+
+    window.addEventListener('resize', () => {
+      isDown = false;
+      track.classList.remove('is-dragging');
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Coca Category Carousel",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Women" },
+    { "type": "color", "id": "heading_color", "label": "Heading Color", "default": "#000000" },
+    { "type": "collection", "id": "collection", "label": "Select collection" },
+
+    { "type": "url", "id": "view_all_link", "label": "View all link (optional)" },
+    { "type": "text", "id": "view_all_label", "label": "View all label", "default": "View all" },
+
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "Image shape",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "arch", "label": "Arch" },
+        { "value": "blob", "label": "Blob" },
+        { "value": "chevronleft", "label": "Chevron left" },
+        { "value": "chevronright", "label": "Chevron right" },
+        { "value": "diamond", "label": "Diamond" },
+        { "value": "parallelogram", "label": "Parallelogram" },
+        { "value": "round", "label": "Round" }
+      ],
+      "default": "default"
+    },
+    { "type": "checkbox", "id": "show_secondary_image", "label": "Show secondary image on hover", "default": false },
+
+    {
+      "type": "select",
+      "id": "quick_add",
+      "label": "Quick add",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "bulk", "label": "Bulk" }
+      ],
+      "default": "none"
+    },
+
+    { "type": "header", "content": "Badges (from tags, for collection mode)" },
+    { "type": "checkbox", "id": "show_badges", "label": "Show badges (Collection mode)", "default": true },
+    { "type": "text", "id": "badge_tags", "label": "Allowed badge tags (comma separated)", "default": "NEW,UNISEX" },
+    { "type": "color", "id": "global_badge_color", "label": "Global Badge Color", "default": "#d7c35a" }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge Text",
+          "info": "e.g. NEW, 20% OFF"
+        },
+        {
+          "type": "color",
+          "id": "badge_color",
+          "label": "Badge Color",
+          "default": "#d7c35a"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Coca Category Carousel",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

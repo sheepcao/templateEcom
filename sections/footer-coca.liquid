@@ -1,0 +1,423 @@
+{{ 'footer-coca.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .coca-footer {
+    margin-top: {{ section.settings.margin_top | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .coca-footer {
+      margin-top: {{ section.settings.margin_top }}px;
+    }
+  }
+{%- endstyle -%}
+
+<footer class="coca-footer color-{{ section.settings.color_scheme }} gradient">
+  <div class="coca-footer__inner">
+    <!-- Footer Top: Newsletter & Social -->
+    <div class="coca-footer__top">
+      {%- if section.settings.newsletter_enable -%}
+        <div class="coca-footer__newsletter">
+          <h3 class="coca-footer__newsletter-title">{{ section.settings.newsletter_heading | default: 'Newsletter signup' }}</h3>
+          <p class="coca-footer__newsletter-text">{{ section.settings.newsletter_text | default: 'Get updates on new arrivals and special offers.' }}</p>
+          {%- form 'customer', id: 'coca-newsletter-form' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div class="coca-footer__newsletter-form">
+              <input type="email" 
+                     name="contact[email]" 
+                     class="coca-footer__newsletter-input"
+                     placeholder="Email address"
+                     required>
+              <button type="submit" class="coca-footer__newsletter-btn">Subscribe</button>
+            </div>
+          {%- endform -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.show_social -%}
+        <div class="coca-footer__social">
+          {%- if settings.social_instagram_link != blank -%}
+            <a href="{{ settings.social_instagram_link }}" class="coca-footer__social-link" target="_blank" rel="noopener">
+              {%- render 'coca-icon', icon: 'instagram' -%}
+            </a>
+          {%- endif -%}
+          {%- if settings.social_twitter_link != blank -%}
+            <a href="{{ settings.social_twitter_link }}" class="coca-footer__social-link" target="_blank" rel="noopener">
+              {%- render 'coca-icon', icon: 'twitter' -%}
+            </a>
+          {%- endif -%}
+          {%- if settings.social_facebook_link != blank -%}
+            <a href="{{ settings.social_facebook_link }}" class="coca-footer__social-link" target="_blank" rel="noopener">
+              {%- render 'coca-icon', icon: 'facebook' -%}
+            </a>
+          {%- endif -%}
+          {%- if settings.social_tiktok_link != blank -%}
+            <a href="{{ settings.social_tiktok_link }}" class="coca-footer__social-link" target="_blank" rel="noopener">
+              {%- render 'coca-icon', icon: 'tiktok' -%}
+            </a>
+          {%- endif -%}
+          {%- if settings.social_youtube_link != blank -%}
+            <a href="{{ settings.social_youtube_link }}" class="coca-footer__social-link" target="_blank" rel="noopener">
+              {%- render 'coca-icon', icon: 'youtube' -%}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- Footer Main: Navigation Links (Desktop) -->
+    <div class="coca-footer__main">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'link_list' -%}
+          <div class="coca-footer__column" {{ block.shopify_attributes }}>
+            <h4 class="coca-footer__column-title">{{ block.settings.heading | default: 'LINKS' }}</h4>
+            {%- if block.settings.menu != blank -%}
+              <ul class="coca-footer__links">
+                {%- for link in block.settings.menu.links -%}
+                  <li>
+                    <a href="{{ link.url }}" class="coca-footer__link">{{ link.title | escape }}</a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      <!-- Default columns if no blocks -->
+      {%- if section.blocks.size == 0 -%}
+        <div class="coca-footer__column">
+          <h4 class="coca-footer__column-title">GUIDE</h4>
+          <ul class="coca-footer__links">
+            <li><a href="/pages/faq" class="coca-footer__link">FAQ</a></li>
+            <li><a href="/pages/shipping" class="coca-footer__link">Shipping</a></li>
+            <li><a href="/pages/returns" class="coca-footer__link">Returns & Exchanges</a></li>
+            <li><a href="/pages/size-guide" class="coca-footer__link">Size guide</a></li>
+          </ul>
+        </div>
+        <div class="coca-footer__column">
+          <h4 class="coca-footer__column-title">ABOUT</h4>
+          <ul class="coca-footer__links">
+            <li><a href="/pages/about" class="coca-footer__link">About</a></li>
+            <li><a href="/pages/stores" class="coca-footer__link">Store list</a></li>
+            <li><a href="/blogs/news" class="coca-footer__link">News</a></li>
+            <li><a href="/recruit" class="coca-footer__link">Careers</a></li>
+          </ul>
+        </div>
+        <div class="coca-footer__column">
+          <h4 class="coca-footer__column-title">MEMBER</h4>
+          <ul class="coca-footer__links">
+            <li><a href="{{ routes.account_url }}" class="coca-footer__link">My account</a></li>
+            <li><a href="{{ routes.account_login_url }}" class="coca-footer__link">Login</a></li>
+            <li><a href="{{ routes.account_register_url }}" class="coca-footer__link">Register</a></li>
+            <li><a href="/pages/wishlist" class="coca-footer__link">Wishlist</a></li>
+          </ul>
+        </div>
+        <div class="coca-footer__column">
+          <h4 class="coca-footer__column-title">CONTACT</h4>
+          <ul class="coca-footer__links">
+            <li><a href="/pages/contact" class="coca-footer__link">Contact</a></li>
+            <li><a href="/pages/corporate" class="coca-footer__link">Business customers</a></li>
+            <li><a href="/pages/press" class="coca-footer__link">Press</a></li>
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- Footer Accordion (Mobile) -->
+    <div class="coca-footer__accordion">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'link_list' -%}
+          <div class="coca-footer__accordion-item" {{ block.shopify_attributes }}>
+            <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle'})">
+              <span class="coca-footer__accordion-title">{{ block.settings.heading | default: 'LINKS' }}</span>
+              <span class="coca-footer__accordion-toggle">+</span>
+            </div>
+            <div class="coca-footer__accordion-content">
+              {%- if block.settings.menu != blank -%}
+                <ul class="coca-footer__links">
+                  {%- for link in block.settings.menu.links -%}
+                    <li>
+                      <a href="{{ link.url }}" class="coca-footer__link">{{ link.title | escape }}</a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      <!-- Default accordion if no blocks -->
+      {%- if section.blocks.size == 0 -%}
+        <div class="coca-footer__accordion-item">
+          <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle'})">
+            <span class="coca-footer__accordion-title">GUIDE</span>
+            <span class="coca-footer__accordion-toggle">+</span>
+          </div>
+          <div class="coca-footer__accordion-content">
+            <ul class="coca-footer__links">
+              <li><a href="/pages/faq" class="coca-footer__link">FAQ</a></li>
+              <li><a href="/pages/shipping" class="coca-footer__link">Shipping</a></li>
+              <li><a href="/pages/returns" class="coca-footer__link">Returns & Exchanges</a></li>
+              <li><a href="/pages/size-guide" class="coca-footer__link">Size guide</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="coca-footer__accordion-item">
+          <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle'})">
+            <span class="coca-footer__accordion-title">ABOUT</span>
+            <span class="coca-footer__accordion-toggle">+</span>
+          </div>
+          <div class="coca-footer__accordion-content">
+            <ul class="coca-footer__links">
+              <li><a href="/pages/about" class="coca-footer__link">About</a></li>
+              <li><a href="/pages/stores" class="coca-footer__link">Store list</a></li>
+              <li><a href="/blogs/news" class="coca-footer__link">News</a></li>
+              <li><a href="/recruit" class="coca-footer__link">Careers</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="coca-footer__accordion-item">
+          <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle'})">
+            <span class="coca-footer__accordion-title">MEMBER</span>
+            <span class="coca-footer__accordion-toggle">+</span>
+          </div>
+          <div class="coca-footer__accordion-content">
+            <ul class="coca-footer__links">
+              <li><a href="{{ routes.account_url }}" class="coca-footer__link">My account</a></li>
+              <li><a href="{{ routes.account_login_url }}" class="coca-footer__link">Login</a></li>
+              <li><a href="{{ routes.account_register_url }}" class="coca-footer__link">Register</a></li>
+              <li><a href="/pages/wishlist" class="coca-footer__link">Wishlist</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="coca-footer__accordion-item">
+          <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle'})">
+            <span class="coca-footer__accordion-title">CONTACT</span>
+            <span class="coca-footer__accordion-toggle">+</span>
+          </div>
+          <div class="coca-footer__accordion-content">
+            <ul class="coca-footer__links">
+              <li><a href="/pages/contact" class="coca-footer__link">Contact</a></li>
+              <li><a href="/pages/corporate" class="coca-footer__link">Business customers</a></li>
+              <li><a href="/pages/press" class="coca-footer__link">Press</a></li>
+            </ul>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- Footer Bottom: Payments & Copyright -->
+    <div class="coca-footer__bottom">
+      {%- if section.settings.payment_enable -%}
+        <div class="coca-footer__payments">
+          {%- for type in shop.enabled_payment_types -%}
+            {{ type | payment_type_svg_tag: class: 'coca-footer__payment-icon' }}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      <div class="coca-footer__copyright">
+        © {{ 'now' | date: '%Y' }} {{ shop.name }}. All Rights Reserved.
+      </div>
+    </div>
+
+    <!-- Legal Links -->
+    {%- if section.settings.show_policy -%}
+      <div class="coca-footer__legal">
+        <a href="/pages/privacy-policy" class="coca-footer__legal-link">Privacy policy</a>
+        <a href="/pages/terms" class="coca-footer__legal-link">Terms of service</a>
+        <a href="/pages/commercial-law" class="coca-footer__legal-link">Commercial law notice</a>
+        <a href="/pages/sitemap" class="coca-footer__legal-link">Sitemap</a>
+      </div>
+    {%- endif -%}
+
+    <!-- Company Info -->
+    {%- if section.settings.show_company_info -%}
+      <div class="coca-footer__company">
+        <p>Operating company: {{ shop.name }}</p>
+        <p>Address: 1-1-1 Jingumae, Shibuya, Tokyo 150-0001</p>
+        <p>TEL: 03-XXXX-XXXX (Weekdays 10:00-18:00)</p>
+      </div>
+    {%- endif -%}
+
+    <!-- Localizations -->
+    {%- if section.settings.enable_country_selector or section.settings.enable_language_selector -%}
+      <div class="coca-footer__localizations">
+        {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
+          <div class="coca-footer__localization">
+            <localization-form>
+              {%- form 'localization', id: 'FooterCountryForm' -%}
+                <select name="country_code">
+                  {%- for country in localization.available_countries -%}
+                    <option value="{{ country.iso_code }}" {% if country.iso_code == localization.country.iso_code %}selected{% endif %}>
+                      {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+                    </option>
+                  {%- endfor -%}
+                </select>
+              {%- endform -%}
+            </localization-form>
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.enable_language_selector and localization.available_languages.size > 1 -%}
+          <div class="coca-footer__localization">
+            <localization-form>
+              {%- form 'localization', id: 'FooterLanguageForm' -%}
+                <select name="language_code">
+                  {%- for language in localization.available_languages -%}
+                    <option value="{{ language.iso_code }}" {% if language.iso_code == localization.language.iso_code %}selected{% endif %}>
+                      {{ language.endonym_name | capitalize }}
+                    </option>
+                  {%- endfor -%}
+                </select>
+              {%- endform -%}
+            </localization-form>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</footer>
+
+<!-- Back to Top Button -->
+<button type="button" class="coca-footer__backtop" id="coca-backtop" onclick="scrollToTop()">
+  {%- render 'coca-icon', icon: 'chevron-up' -%}
+</button>
+
+<script>
+  // Scroll to top
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Show/hide back to top button
+  window.addEventListener('scroll', function() {
+    const backtop = document.getElementById('coca-backtop');
+    if (window.pageYOffset > 300) {
+      backtop.classList.add('visible');
+    } else {
+      backtop.classList.remove('visible');
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Coca Footer",
+  "class": "section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "newsletter_enable",
+      "default": true,
+      "label": "Enable newsletter signup"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "default": "Newsletter signup",
+      "label": "Newsletter heading"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "default": "Get updates on new arrivals and special offers.",
+      "label": "Newsletter text"
+    },
+    {
+      "type": "header",
+      "content": "Social Media"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social",
+      "default": true,
+      "label": "Show social media icons"
+    },
+    {
+      "type": "header",
+      "content": "Payment & Legal"
+    },
+    {
+      "type": "checkbox",
+      "id": "payment_enable",
+      "default": true,
+      "label": "Show payment icons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_policy",
+      "default": true,
+      "label": "Show policy links"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_company_info",
+      "default": true,
+      "label": "Show company information"
+    },
+    {
+      "type": "header",
+      "content": "Localization"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_country_selector",
+      "default": true,
+      "label": "Enable country/region selector"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_language_selector",
+      "default": true,
+      "label": "Enable language selector"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Margin top",
+      "default": 80
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_list",
+      "name": "Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "LINKS",
+          "label": "Heading"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

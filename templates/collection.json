@@ -1,0 +1,35 @@
+{
+  "sections": {
+    "coca_mobile_quick_links_collection": {
+      "type": "coca-mobile-quick-links",
+      "settings": {
+        "label_1": "WOMEN",
+        "link_1": "",
+        "label_2": "MEN",
+        "link_2": "",
+        "label_3": "KIDS",
+        "link_3": "",
+        "label_4": "LIVE",
+        "link_4": "",
+        "label_5": "SNAP",
+        "link_5": ""
+      }
+    },
+    "product-grid": {
+      "type": "main-collection-coca",
+      "settings": {
+        "products_per_page": 16,
+        "show_category_filter": true,
+        "show_color_filter": true,
+        "show_price_filter": true,
+        "show_default_price_options": true,
+        "padding_top": 0,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "coca_mobile_quick_links_collection",
+    "product-grid"
+  ]
+}

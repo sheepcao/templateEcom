@@ -1,0 +1,285 @@
+{% comment %}
+  Coca NEWS carousel (Dawn)
+  - Manually select articles via blocks
+  - Works under Dawn color schemes + section padding
+  - Supports click arrows + touch swipe
+{% endcomment %}
+
+{{ 'cc-news-carousel.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section
+  class="cc-news color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding"
+  data-cc-news
+  data-section-id="{{ section.id }}"
+>
+  <div class="page-width">
+    <div class="cc-news__head">
+      <h2 class="cc-news__title">{{ section.settings.heading }}</h2>
+
+      <div class="cc-news__controls" aria-label="News carousel controls">
+        <button class="cc-news__btn" type="button" data-cc-news-prev aria-label="Previous">
+          <span class="cc-news__icon" aria-hidden="true">
+            {{- 'icon-caret.svg' | inline_asset_content -}}
+          </span>
+        </button>
+
+        <div class="cc-news__count" aria-live="polite">
+          <span data-cc-news-index>1</span>
+          <span class="cc-news__count-sep">/</span>
+          <span data-cc-news-total>1</span>
+        </div>
+
+        <button class="cc-news__btn" type="button" data-cc-news-next aria-label="Next">
+          <span class="cc-news__icon cc-news__icon--next" aria-hidden="true">
+            {{- 'icon-caret.svg' | inline_asset_content -}}
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div class="cc-news__viewport" data-cc-news-viewport>
+      <div class="cc-news__track" data-cc-news-track>
+        {% if section.blocks.size > 0 %}
+          {% for block in section.blocks %}
+            {%- liquid
+              assign a = block.settings.article
+              assign title = block.settings.custom_title
+              assign date = block.settings.custom_date
+              
+              if a != blank
+                if title == blank
+                  assign title = a.title
+                endif
+                if date == blank
+                  assign date = a.published_at | date: "%Y.%m.%d"
+                endif
+                assign url = a.url
+              else
+                if title == blank
+                  assign title = 'Example Article Title'
+                endif
+                if date == blank
+                  assign date = '2025.11.19'
+                endif
+                assign url = '#'
+              endif
+            -%}
+            <article class="cc-news__slide" data-cc-news-slide {{ block.shopify_attributes }}>
+              <a class="cc-news__link" href="{{ url }}">
+                <span class="cc-news__link-text">{{ title }}</span>
+                {% if section.settings.show_date %}
+                  <span class="cc-news__date">({{ date }})</span>
+                {% endif %}
+              </a>
+            </article>
+          {% endfor %}
+        {% else %}
+          <article class="cc-news__slide" data-cc-news-slide>
+            <a class="cc-news__link" href="#">
+              <span class="cc-news__link-text">Please add News content in section blocks</span>
+              {% if section.settings.show_date %}
+                <span class="cc-news__date">(2025.11.19)</span>
+              {% endif %}
+            </a>
+          </article>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<script>
+  (() => {
+    const root = document.querySelector('[data-cc-news][data-section-id="{{ section.id }}"]');
+    if (!root) return;
+
+    const track = root.querySelector('[data-cc-news-track]');
+    // Use live collection or re-query to support block updates in editor
+    const getSlides = () => Array.from(root.querySelectorAll('[data-cc-news-slide]'));
+    let slides = getSlides();
+    const btnPrev = root.querySelector('[data-cc-news-prev]');
+    const btnNext = root.querySelector('[data-cc-news-next]');
+    const elIndex = root.querySelector('[data-cc-news-index]');
+    const elTotal = root.querySelector('[data-cc-news-total]');
+    const viewport = root.querySelector('[data-cc-news-viewport]');
+
+    if (!track || !viewport) return;
+
+    let i = 0;
+    
+    const update = () => {
+      slides = getSlides(); // refresh slides count
+      const total = slides.length;
+      
+      if (elTotal) elTotal.textContent = String(total);
+      if (total === 0) return;
+
+      // Ensure index is valid
+      if (i >= total) i = total - 1;
+      if (i < 0) i = 0;
+
+      const w = viewport.getBoundingClientRect().width || 0;
+      track.style.transform = `translate3d(${-i * w}px, 0, 0)`;
+      if (elIndex) elIndex.textContent = String(i + 1);
+      if (btnPrev) btnPrev.disabled = (i <= 0);
+      if (btnNext) btnNext.disabled = (i >= total - 1);
+    };
+
+    const goPrev = () => { i = Math.max(0, i - 1); update(); };
+    const goNext = () => { 
+      slides = getSlides();
+      i = Math.min(slides.length - 1, i + 1); 
+      update(); 
+    };
+
+    btnPrev && btnPrev.addEventListener('click', goPrev);
+    btnNext && btnNext.addEventListener('click', goNext);
+
+    // Touch swipe
+    let startX = 0;
+    let dx = 0;
+    viewport.addEventListener('touchstart', (e) => {
+      if (!e.touches || !e.touches[0]) return;
+      startX = e.touches[0].clientX;
+      dx = 0;
+    }, { passive: true });
+
+    viewport.addEventListener('touchmove', (e) => {
+      if (!e.touches || !e.touches[0]) return;
+      dx = e.touches[0].clientX - startX;
+    }, { passive: true });
+
+    viewport.addEventListener('touchend', () => {
+      if (Math.abs(dx) < 30) return;
+      if (dx > 0) goPrev();
+      else goNext();
+    });
+
+    // Resize-safe
+    if ('ResizeObserver' in window) {
+      const ro = new ResizeObserver(() => update());
+      ro.observe(viewport);
+    } else {
+      window.addEventListener('resize', () => update());
+    }
+    
+    // Listen for Shopify block selection events to jump to slide
+    document.addEventListener('shopify:block:select', (e) => {
+      if (e.detail.sectionId !== '{{ section.id }}') return;
+      const blockId = e.detail.blockId;
+      const slideIndex = slides.findIndex(slide => slide.getAttribute('data-block-id') === blockId); // Assuming block id attribute is added, but standard shopify_attributes adds it to the element
+      // shopify_attributes adds data-shopify-editor-block="{id}"
+      // But we can just find index in section.blocks order if DOM matches
+      // Simpler: just re-update on any change
+      update();
+    });
+    
+    document.addEventListener('shopify:section:load', () => update());
+
+    update();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Coca news carousel",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "NEWS"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show publish date",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 12
+    }
+  ],
+  "blocks": [
+    {
+      "type": "news_item",
+      "name": "News Item",
+      "settings": [
+        {
+          "type": "article",
+          "id": "article",
+          "label": "Article"
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title (Optional)",
+          "info": "Overrides the article title"
+        },
+        {
+          "type": "text",
+          "id": "custom_date",
+          "label": "Custom Date (Optional)",
+          "info": "Format: YYYY.MM.DD. Overrides article date."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Coca news carousel",
+      "blocks": [
+        { "type": "news_item" },
+        { "type": "news_item" },
+        { "type": "news_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
