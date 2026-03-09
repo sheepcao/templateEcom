@@ -70,7 +70,7 @@
   font-size: var(--coca-font-size-sm, 12px);
   font-weight: 700;
   color: var(--coca-color-white, #fff);
-  z-index: 5;
+  z-index: 1;
   pointer-events: none;
 }
 .cc-ranking__badge--1 { background: #b7a400; }
@@ -80,7 +80,12 @@
 .cc-ranking__badge--5,
 .cc-ranking__badge--6 { background: #e9e9e9; color: #555; }
 
-.cc-ranking__item .card { border: none; background: transparent; }
+.cc-ranking__item .card {
+  position: relative;
+  z-index: 0;
+  border: none;
+  background: transparent;
+}
 .cc-ranking__item .card__media { background: var(--coca-color-bg-gray, #f3f3f3); }
 .cc-ranking__item .card__information { padding-top: 12px; }
 .cc-ranking__item .card__media .media img { object-fit: cover; }

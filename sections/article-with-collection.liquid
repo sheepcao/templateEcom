@@ -1,5 +1,30 @@
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'card-product-coca.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .article-related-{{ section.id }} {
+    margin-top: 60px;
+  }
+
+  .article-related-{{ section.id }}__heading {
+    text-align: center;
+    margin: 0 0 40px;
+  }
+
+  .article-related-{{ section.id }}__grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat({{ section.settings.columns_mobile }}, minmax(0, 1fr));
+  }
+
+  @media screen and (min-width: 990px) {
+    .article-related-{{ section.id }}__grid {
+      gap: 20px;
+      grid-template-columns: repeat({{ section.settings.columns_desktop }}, minmax(0, 1fr));
+    }
+  }
+{%- endstyle -%}
 
 {% liquid
   assign related_collection = article.metafields.custom.related_collection.value
@@ -7,42 +32,33 @@
   assign products_to_display = blank
   if related_collection != blank
     assign products_to_display = related_collection.products
-  elsif section.settings.collection != blank
-    assign products_to_display = section.settings.collection.products
   endif
 %}
 
-{% if section.settings.show_collection %}
-  {% if products_to_display != blank or request.design_mode %}
-    <div class="page-width" style="margin-top: 60px;">
+{% if section.settings.show_collection and related_collection != blank and products_to_display != blank %}
+    <div class="page-width article-related-{{ section.id }}">
       {% if section.settings.heading != blank %}
-        <h2 style="text-align:center;margin-bottom:40px;">
+        <h2 class="article-related-{{ section.id }}__heading">
           {{ section.settings.heading }}
         </h2>
       {% endif %}
 
-      {% if products_to_display != blank %}
-        <ul class="grid product-grid grid--{{ section.settings.columns_mobile }}-col-tablet-down grid--{{ section.settings.columns_desktop }}-col-desktop">
-          {% for product in products_to_display %}
-            <li class="grid__item">
-              {% render 'card-product-coca',
-                card_product: product,
-                media_aspect_ratio: 'square',
-                show_secondary_image: true,
-                show_vendor: false,
-                show_rating: false,
-                show_quick_add: true
-              %}
-            </li>
-          {% endfor %}
-        </ul>
-      {% elsif request.design_mode %}
-        <div class="rte" style="text-align:center;opacity:.7;">
-          <p>Please select a default collection in Theme Editor, or set <code>custom.related_collection</code> on the article.</p>
-        </div>
-      {% endif %}
+      <div class="article-related-{{ section.id }}__grid">
+        {% for product in products_to_display limit: section.settings.products_to_show %}
+          <div class="article-related-{{ section.id }}__item">
+            {% render 'card-product-coca',
+              card_product: product,
+              media_aspect_ratio: 'square',
+              show_secondary_image: true,
+              show_vendor: false,
+              show_rating: false,
+              show_quick_add: false,
+              show_color_dots: false
+            %}
+          </div>
+        {% endfor %}
+      </div>
     </div>
-  {% endif %}
 {% endif %}
 
 {% schema %}
@@ -60,11 +76,6 @@
       "id": "heading",
       "label": "Collection heading",
       "default": "Related Products"
-    },
-    {
-      "type": "collection",
-      "id": "collection",
-      "label": "Select collection"
     },
     {
       "type": "range",

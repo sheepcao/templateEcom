@@ -21,6 +21,12 @@
       "type": "main-cart-footer",
       "settings": {
         "color_scheme": "scheme-1",
+        "enable_free_shipping_calculator": true,
+        "free_shipping_threshold": 1800,
+        "enable_cart_upsell": true,
+        "upsell_title": "凑单推荐",
+        "upsell_collection": "all",
+        "upsell_products_limit": 4,
         "padding_top": 20,
         "padding_bottom": 40
       },

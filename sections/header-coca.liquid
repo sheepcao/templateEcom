@@ -2,6 +2,7 @@
 
 {%- liquid
   assign menu = section.settings.menu
+  assign search_fields = section.settings.search_fields | default: 'title,product_type,vendor,tag,variants.title' | strip
 -%}
 
 <!-- Desktop Header -->
@@ -71,6 +72,8 @@
                name="q"
                placeholder="{{ section.settings.search_placeholder | default: 'Search by keyword' }}"
                aria-label="{{ 'general.search.search' | t }}">
+        <input type="hidden" name="options[prefix]" value="last">
+        <input type="hidden" name="options[fields]" value="{{ search_fields | escape }}">
         <button type="submit" class="coca-search-btn" aria-label="{{ 'general.search.search' | t }}">
           {%- render 'coca-icon', icon: 'search' -%}
         </button>
@@ -301,6 +304,23 @@
     button.addEventListener('click', forceClose, true);
   });
 
+  // Global fallback: click/tap outside active drawer closes it.
+  if (!window.__cocaDrawerOutsideCloseBound) {
+    window.__cocaDrawerOutsideCloseBound = true;
+    document.addEventListener(
+      'pointerdown',
+      (event) => {
+        const activeDrawer = document.querySelector('.coca-drawer.active');
+        if (!activeDrawer) return;
+        if (event.target.closest('.coca-drawer')) return;
+        if (event.target.closest('.coca-mobile-menu-btn')) return;
+        event.preventDefault();
+        cocaCloseDrawer();
+      },
+      true
+    );
+  }
+
   // Mobile floating header on scroll
   (function initCocaMobileFloatingHeader() {
     const mobileWrapper = document.querySelector('.coca-header-wrapper--mobile');
@@ -375,6 +395,13 @@
       "id": "search_placeholder",
       "label": "Search Placeholder",
       "default": "Search by keyword"
+    },
+    {
+      "type": "text",
+      "id": "search_fields",
+      "label": "Search fields",
+      "default": "title,product_type,vendor,tag,variants.title",
+      "info": "Comma-separated fields, e.g. title,vendor,tag,variants.title"
     },
     {
       "type": "header",

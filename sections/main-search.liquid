@@ -41,12 +41,34 @@
   .search__button .icon {
     height: 1.8rem;
   }
+
+  .template-search .product-grid {
+    column-gap: 1rem;
+    row-gap: 2.2rem;
+  }
+
+  @media screen and (max-width: 749px) {
+    .template-search .product-grid > .grid__item {
+      width: calc(50% - 0.5rem);
+      max-width: calc(50% - 0.5rem);
+      flex: 0 0 calc(50% - 0.5rem);
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .template-search .product-grid {
+      column-gap: 1.6rem;
+      row-gap: 3rem;
+    }
+  }
 </style>
 
 {%- liquid
   assign sort_by = search.sort_by | default: search.default_sort_by
   assign terms = search.terms | escape
-  assign search_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
+  assign search_fields = section.settings.search_fields | default: 'title,product_type,vendor,tag,variants.title' | strip
+  assign encoded_search_fields = search_fields | url_encode
+  assign search_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&options%5Bfields%5D=' | append: encoded_search_fields | append: '&sort_by=' | append: sort_by
 -%}
 
 {%- style -%}
@@ -102,6 +124,7 @@
               >
               <label class="field__label" for="Search-In-Template">{{ 'general.search.search' | t }}</label>
               <input name="options[prefix]" type="hidden" value="last">
+              <input name="options[fields]" type="hidden" value="{{ search_fields | escape }}">
 
               {%- if settings.predictive_search_enabled -%}
                 <div class="predictive-search predictive-search--search-template" tabindex="-1" data-predictive-search>
@@ -253,7 +276,7 @@
             >
               <div class="loading-overlay gradient"></div>
               <ul
-                class="grid product-grid  grid--{{ section.settings.columns_mobile }}-col-tablet-down grid--{{ section.settings.columns_desktop }}-col-desktop"
+                class="grid product-grid grid--2-col-tablet-down grid--{{ section.settings.columns_desktop }}-col-desktop"
                 role="list"
               >
                 {%- assign skip_card_product_styles = false -%}
@@ -445,6 +468,13 @@
       "default": false,
       "label": "t:sections.main-search.settings.show_rating.label",
       "info": "t:sections.main-search.settings.show_rating.info"
+    },
+    {
+      "type": "text",
+      "id": "search_fields",
+      "default": "title,product_type,vendor,tag,variants.title",
+      "label": "Search fields",
+      "info": "Comma-separated fields, e.g. title,vendor,tag,variants.title"
     },
     {
       "type": "header",

@@ -19,7 +19,11 @@
 <div class="section-{{ section.id }}-padding">
   <div class="coca-collection">
     <!-- Collection Title -->
-    <h1 class="coca-collection__title">{{ collection.title | escape }}</h1>
+    {%- assign section_title = section.settings.custom_title | strip -%}
+    {%- if section_title == blank -%}
+      {%- assign section_title = collection.title -%}
+    {%- endif -%}
+    <h1 class="coca-collection__title">{{ section_title | escape }}</h1>
 
     {%- assign current_collection_handle = collection.handle -%}
     {%- assign current_collection_url = collection.url -%}
@@ -234,6 +238,7 @@
     {%- endfor -%}
 
     {%- assign color_filter = blank -%}
+    {%- assign size_filter = blank -%}
     {%- assign price_list_filter = blank -%}
     {%- assign price_range_filter = blank -%}
     {%- for filter in collection.filters -%}
@@ -253,6 +258,16 @@
         {%- endif -%}
         {%- if color_filter == blank and is_color_filter_candidate -%}
           {%- assign color_filter = filter -%}
+        {%- endif -%}
+
+        {%- assign is_size_filter_candidate = false -%}
+        {%- if filter_label_downcase contains 'size' or filter_param_downcase contains 'size' -%}
+          {%- assign is_size_filter_candidate = true -%}
+        {%- elsif filter.label contains '尺码' or filter.label contains '尺碼' or filter.label contains '尺寸' or filter.label contains 'サイズ' -%}
+          {%- assign is_size_filter_candidate = true -%}
+        {%- endif -%}
+        {%- if size_filter == blank and is_size_filter_candidate -%}
+          {%- assign size_filter = filter -%}
         {%- endif -%}
 
         {%- assign is_price_filter_candidate = false -%}
@@ -314,6 +329,11 @@
       {%- assign has_price_filter_options = true -%}
     {%- endif -%}
 
+    {%- assign has_size_filter_options = false -%}
+    {%- if size_filter != blank and size_filter.values.size > 0 -%}
+      {%- assign has_size_filter_options = true -%}
+    {%- endif -%}
+
     <!-- Mobile Filter Bar -->
     <div class="coca-mobile-filter-bar">
       <div class="coca-mobile-filter__list">
@@ -333,6 +353,11 @@
             PRICE
           </button>
         {%- endif -%}
+        {%- if section.settings.show_size_filter and has_size_filter_options -%}
+          <button type="button" class="coca-mobile-filter__item" onclick="openMobileFilter('size')">
+            SIZE
+          </button>
+        {%- endif -%}
       </div>
     </div>
 
@@ -342,7 +367,7 @@
         <!-- Sort Filter -->
         <div class="coca-filter__section">
           <div class="coca-filter__header" onclick="toggleFilter(this)">
-            <span class="coca-filter__title coca-filter__title--sort">SORT</span>
+              <span class="coca-filter__title coca-filter__title--sort">SORT</span>
               <span class="coca-filter__toggle">{%- render 'coca-icon', icon: 'chevron-down' -%}</span>
           </div>
           <div class="coca-filter__options">
@@ -361,7 +386,7 @@
         {%- if section.settings.show_category_filter and category_items_count > 1 -%}
           <div class="coca-filter__section">
             <div class="coca-filter__header" onclick="toggleFilter(this)">
-              <span class="coca-filter__title">Category</span>
+              <span class="coca-filter__title">CATEGORIES</span>
               <span class="coca-filter__toggle">{%- render 'coca-icon', icon: 'chevron-down' -%}</span>
             </div>
             <div class="coca-filter__category-list">
@@ -374,7 +399,7 @@
         {%- if section.settings.show_price_filter and has_price_filter_options -%}
           <div class="coca-filter__section">
             <div class="coca-filter__header" onclick="toggleFilter(this)">
-              <span class="coca-filter__title">Price</span>
+              <span class="coca-filter__title">PRICE</span>
               <span class="coca-filter__toggle">{%- render 'coca-icon', icon: 'chevron-down' -%}</span>
             </div>
             <div class="coca-filter__options coca-filter__price-list">
@@ -409,7 +434,7 @@
                   {%- assign bucket_offset = i | times: price_range_step -%}
                   {%- assign bucket_low = dynamic_start_price | plus: bucket_offset -%}
                   {%- assign bucket_high = bucket_low | plus: price_range_step -%}
-                  {%- assign bucket_min = bucket_low | plus: 1 -%}
+                  {%- assign bucket_min = bucket_low -%}
                   {%- assign bucket_max = bucket_high -%}
                   {%- assign bucket_label = bucket_min | append: '~' | append: bucket_max -%}
                   {%- if i == 0 and dynamic_start_price == 0 -%}
@@ -447,7 +472,7 @@
                     <input
                       type="checkbox"
                       {% if is_bucket_checked %}checked{% endif %}
-                      onchange="window.location.href = this.checked ? '{{ bucket_url | strip }}' : '{{ price_base_url }}'"
+                      onchange="cocaApplyPriceRange(this, '{{ price_base_url }}', '{{ price_range_filter.min_value.param_name }}', '{{ price_range_filter.max_value.param_name }}', '{{ bucket_min }}', '{{ bucket_max }}')"
                     >
                     <span>{{ bucket_label }}</span>
                   </label>
@@ -455,7 +480,7 @@
 
                 {%- if dynamic_bucket_count > dynamic_render_count -%}
                   {%- assign open_offset = dynamic_render_count | times: price_range_step -%}
-                  {%- assign open_min = dynamic_start_price | plus: open_offset | plus: 1 -%}
+                  {%- assign open_min = dynamic_start_price | plus: open_offset -%}
                   {%- assign open_label = open_min | append: '~' -%}
                   {%- assign open_min_str = open_min | append: '' -%}
                   {%- capture open_url -%}
@@ -470,7 +495,7 @@
                     <input
                       type="checkbox"
                       {% if active_min_price == open_min_str and active_max_price == blank %}checked{% endif %}
-                      onchange="window.location.href = this.checked ? '{{ open_url | strip }}' : '{{ price_base_url }}'"
+                      onchange="cocaApplyPriceRange(this, '{{ price_base_url }}', '{{ price_range_filter.min_value.param_name }}', '{{ price_range_filter.max_value.param_name }}', '{{ open_min }}', '')"
                     >
                     <span>{{ open_label }}</span>
                   </label>
@@ -506,11 +531,37 @@
           </div>
         {%- endif -%}
 
+        <!-- Size Filter -->
+        {%- if section.settings.show_size_filter and has_size_filter_options -%}
+          <div class="coca-filter__section">
+            <div class="coca-filter__header" onclick="toggleFilter(this)">
+              <span class="coca-filter__title">SIZE</span>
+              <span class="coca-filter__toggle">{%- render 'coca-icon', icon: 'chevron-down' -%}</span>
+            </div>
+            <div class="coca-filter__options coca-filter__size-list">
+              {%- for value in size_filter.values -%}
+                <label class="coca-filter__option">
+                  <input
+                    type="checkbox"
+                    {% if value.active %}checked{% endif %}
+                    data-url-add="{{ value.url_to_add }}"
+                    data-url-remove="{{ value.url_to_remove }}"
+                    data-param="{{ size_filter.param_name }}"
+                    data-value="{{ value.value | escape }}"
+                    onchange="cocaApplyListFilter(this)"
+                  >
+                  <span>{{ value.label | escape }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
         <!-- Color Filter -->
         {%- if section.settings.show_color_filter -%}
           <div class="coca-filter__section">
             <div class="coca-filter__header" onclick="toggleFilter(this)">
-              <span class="coca-filter__title">Color</span>
+              <span class="coca-filter__title">COLOR</span>
               <span class="coca-filter__toggle">{%- render 'coca-icon', icon: 'chevron-down' -%}</span>
             </div>
             <div class="coca-filter__color-list">
@@ -520,6 +571,31 @@
                   {%- if value.active -%}
                     {%- assign color_target_url = value.url_to_remove -%}
                   {%- endif -%}
+                  {%- assign color_label_downcase = value.label | downcase -%}
+                  {%- assign fallback_color_hex = '' -%}
+                  {%- if color_label_downcase contains 'black' or value.label contains '黑' -%}
+                    {%- assign fallback_color_hex = '#222222' -%}
+                  {%- elsif color_label_downcase contains 'white' or value.label contains '白' -%}
+                    {%- assign fallback_color_hex = '#ffffff' -%}
+                  {%- elsif color_label_downcase contains 'gray' or color_label_downcase contains 'grey' or value.label contains '灰' -%}
+                    {%- assign fallback_color_hex = '#9a9a9a' -%}
+                  {%- elsif color_label_downcase contains 'blue' or value.label contains '蓝' or value.label contains '藍' -%}
+                    {%- assign fallback_color_hex = '#3f64c7' -%}
+                  {%- elsif color_label_downcase contains 'green' or value.label contains '绿' or value.label contains '綠' -%}
+                    {%- assign fallback_color_hex = '#5b7f58' -%}
+                  {%- elsif color_label_downcase contains 'red' or value.label contains '红' or value.label contains '紅' -%}
+                    {%- assign fallback_color_hex = '#b84a4a' -%}
+                  {%- elsif color_label_downcase contains 'purple' or value.label contains '紫' -%}
+                    {%- assign fallback_color_hex = '#8c6aa5' -%}
+                  {%- elsif color_label_downcase contains 'brown' or value.label contains '棕' or value.label contains '咖' -%}
+                    {%- assign fallback_color_hex = '#8a6b53' -%}
+                  {%- elsif color_label_downcase contains 'beige' or value.label contains '米' -%}
+                    {%- assign fallback_color_hex = '#ddd2b8' -%}
+                  {%- elsif color_label_downcase contains 'pink' or value.label contains '粉' -%}
+                    {%- assign fallback_color_hex = '#d99ab2' -%}
+                  {%- elsif color_label_downcase contains 'yellow' or value.label contains '黄' or value.label contains '黃' -%}
+                    {%- assign fallback_color_hex = '#d5b44a' -%}
+                  {%- endif -%}
                   <label class="coca-filter__color-item">
                     <input
                       type="checkbox"
@@ -528,6 +604,10 @@
                     >
                     {%- if value.swatch and value.swatch.color != blank -%}
                       <span class="coca-filter__color-swatch" style="background: {{ value.swatch.color }};"></span>
+                    {%- elsif value.swatch and value.swatch.image != blank -%}
+                      <span class="coca-filter__color-swatch" style="background-image: url('{{ value.swatch.image | image_url: width: 48 }}'); background-size: cover; background-position: center;"></span>
+                    {%- elsif fallback_color_hex != blank -%}
+                      <span class="coca-filter__color-swatch" style="background: {{ fallback_color_hex }};"></span>
                     {%- else -%}
                       <span class="coca-filter__color-swatch coca-filter__color-swatch--{{ value.label | downcase | handle }}"></span>
                     {%- endif -%}
@@ -552,7 +632,7 @@
           {%- else -%}
             <div class="coca-product-grid">
               {%- for product in collection.products -%}
-                {%- render 'card-product-coca', product: product -%}
+                {%- render 'card-product-coca', product: product, show_color_dots: false -%}
               {%- endfor -%}
             </div>
 
@@ -661,6 +741,20 @@
     window.location.href = url.pathname + url.search;
   }
 
+  function cocaApplyPriceRange(input, baseUrl, minParam, maxParam, minValue, maxValue) {
+    const url = new URL(baseUrl || window.location.pathname, window.location.origin);
+    url.searchParams.delete(minParam);
+    url.searchParams.delete(maxParam);
+
+    if (input.checked) {
+      if (minValue !== '') url.searchParams.set(minParam, minValue);
+      if (maxValue !== '') url.searchParams.set(maxParam, maxValue);
+    }
+
+    const query = url.searchParams.toString();
+    window.location.href = url.pathname + (query ? `?${query}` : '');
+  }
+
   function buildSortUrl(value) {
     return '{{ collection.url }}?sort_by=' + encodeURIComponent(value);
   }
@@ -736,7 +830,8 @@
       sort: 'SORT',
       category: 'CATEGORIES',
       color: 'COLOR',
-      price: 'PRICE'
+      price: 'PRICE',
+      size: 'SIZE'
     };
 
     title.textContent = titles[type] || 'Filter';
@@ -754,6 +849,8 @@
       sourceContent = document.querySelector('.coca-filter__color-list');
     } else if (type === 'price') {
       sourceContent = document.querySelector('.coca-filter__price-list');
+    } else if (type === 'size') {
+      sourceContent = document.querySelector('.coca-filter__size-list');
     }
 
     if (sourceContent) {
@@ -790,6 +887,22 @@
     closeMobileFilter();
   }
 
+  if (!window.__cocaMobileFilterOutsideCloseBound) {
+    window.__cocaMobileFilterOutsideCloseBound = true;
+    document.addEventListener(
+      'pointerdown',
+      function(event) {
+        const drawer = document.getElementById('coca-mobile-filter-drawer');
+        if (!drawer || !drawer.classList.contains('active')) return;
+        if (event.target.closest('.coca-mobile-filter-drawer__content')) return;
+        if (event.target.closest('.coca-filter__btn')) return;
+        event.preventDefault();
+        closeMobileFilter();
+      },
+      true
+    );
+  }
+
   cocaSyncCategoryCheckedFromUrl();
 
 </script>
@@ -799,6 +912,12 @@
   "name": "Coca Collection",
   "class": "section",
   "settings": [
+    {
+      "type": "text",
+      "id": "custom_title",
+      "label": "Custom title",
+      "info": "Leave blank to use the collection title"
+    },
     {
       "type": "range",
       "id": "products_per_page",
@@ -831,6 +950,12 @@
       "id": "show_price_filter",
       "default": true,
       "label": "Show price filter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_size_filter",
+      "default": true,
+      "label": "Show size filter"
     },
     {
       "type": "checkbox",

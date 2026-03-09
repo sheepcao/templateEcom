@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "name": "Coca Footer",
   "type": "footer",
@@ -16,7 +25,73 @@
         "enable_country_selector": true,
         "enable_language_selector": true,
         "margin_top": 80
-      }
+      },
+      "blocks": {
+        "footer_guide": {
+          "type": "link_list",
+          "settings": {
+            "heading": "GUIDE",
+            "link_1_label": "FAQ",
+            "link_1_url": "/pages/faq",
+            "link_2_label": "Shipping",
+            "link_2_url": "/pages/shipping",
+            "link_3_label": "Returns & Exchanges",
+            "link_3_url": "/pages/returns",
+            "link_4_label": "Size guide",
+            "link_4_url": "/pages/size-guide",
+            "default_open_mobile": false
+          }
+        },
+        "footer_about": {
+          "type": "link_list",
+          "settings": {
+            "heading": "ABOUT",
+            "link_1_label": "About",
+            "link_1_url": "/pages/about",
+            "link_2_label": "Store list",
+            "link_2_url": "/pages/stores",
+            "link_3_label": "News",
+            "link_3_url": "/blogs/news",
+            "link_4_label": "Careers",
+            "link_4_url": "/recruit",
+            "default_open_mobile": false
+          }
+        },
+        "footer_member": {
+          "type": "link_list",
+          "settings": {
+            "heading": "MEMBER",
+            "link_1_label": "My account",
+            "link_1_url": "/account",
+            "link_2_label": "Login",
+            "link_2_url": "/account/login",
+            "link_3_label": "Register",
+            "link_3_url": "/account/register",
+            "link_4_label": "Wishlist",
+            "link_4_url": "/pages/wishlist",
+            "default_open_mobile": false
+          }
+        },
+        "footer_contact": {
+          "type": "link_list",
+          "settings": {
+            "heading": "CONTACT",
+            "link_1_label": "Contact",
+            "link_1_url": "/pages/contact",
+            "link_2_label": "Business customers",
+            "link_2_url": "/pages/corporate",
+            "link_3_label": "Press",
+            "link_3_url": "/pages/press",
+            "default_open_mobile": false
+          }
+        }
+      },
+      "block_order": [
+        "footer_guide",
+        "footer_about",
+        "footer_member",
+        "footer_contact"
+      ]
     }
   },
   "order": [

@@ -8,6 +8,7 @@
   - collection_title: String (optional)
   - placeholder_image: Placeholder handle (optional)
   - show_secondary_image: Boolean (optional)
+  - show_color_dots: Boolean (optional, default: true)
   - quick_add: String ("none" | "standard" | "bulk", optional)
   - show_quick_add: Boolean (optional, true => standard)
   - section_id: String (optional)
@@ -16,6 +17,10 @@
 {%- liquid
   assign product_ref = product | default: card_product | default: product_card_product
   assign quick_add_mode = quick_add | default: 'none'
+  assign show_color_dots_flag = true
+  if show_color_dots == false
+    assign show_color_dots_flag = false
+  endif
   if show_quick_add == true and quick_add_mode == 'none'
     assign quick_add_mode = 'standard'
   endif
@@ -105,7 +110,7 @@
         <p class="coca-product-card__price">{{ product_ref.price | money }}</p>
       {%- endif -%}
 
-      {%- if product_ref.variants.size > 1 -%}
+      {%- if show_color_dots_flag and product_ref.variants.size > 1 -%}
         {%- liquid
           assign color_option_index = -1
           for option in product_ref.options_with_values

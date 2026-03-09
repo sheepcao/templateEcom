@@ -8,7 +8,7 @@
  * Works for both product page and footer accordions.
  * @param {HTMLElement} headerEl - The clicked header element
  * @param {Object} opts
- *   @param {string} opts.toggleSelector  - Selector for toggle indicator (e.g. '+' / '−')
+ *   @param {string} opts.toggleSelector  - Selector for toggle indicator (e.g. '+' / '�?)
  *   @param {string} opts.itemSelector    - Selector to find parent item from header
  *   @param {string} opts.activeClass     - Active class name (default: 'active')
  *   @param {boolean} opts.exclusive      - Close other items when opening (default: true)
@@ -26,7 +26,7 @@ function cocaToggleAccordion(headerEl, opts) {
   var setToggleState = function(el, expanded) {
     if (!el) return;
     if (el.querySelector('svg')) return;
-    el.textContent = expanded ? '−' : '+';
+        el.textContent = expanded ? '-' : '+';
   };
 
   if (exclusive) {

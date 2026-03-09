@@ -447,15 +447,65 @@
   // ========== Gallery Controller ==========
   const cocaImages = JSON.parse(document.getElementById('coca-images-data').textContent);
   let cocaCurrentIndex = 0;
+  let cocaGalleryAnimating = false;
 
-  function galleryGoTo(index) {
+  cocaImages.forEach((image) => {
+    const preload = new Image();
+    preload.src = image.src;
+  });
+
+  async function galleryGoTo(index, direction = 0) {
     if (!cocaImages.length) return;
-    cocaCurrentIndex = (index + cocaImages.length) % cocaImages.length;
+    const targetIndex = (index + cocaImages.length) % cocaImages.length;
+    if (targetIndex === cocaCurrentIndex) return;
+    if (cocaGalleryAnimating) return;
+
+    const previousIndex = cocaCurrentIndex;
+    cocaCurrentIndex = targetIndex;
     const img = cocaImages[cocaCurrentIndex];
 
-    // Update main image
+    if (direction === 0) {
+      direction = cocaCurrentIndex > previousIndex ? 1 : -1;
+    }
+
+    // Update main image with slide transition
     const mainImg = document.getElementById('coca-main-image');
-    if (mainImg) mainImg.src = img.src;
+    const mainImageContainer = document.querySelector('.coca-product__main-image');
+    if (mainImg && mainImageContainer) {
+      cocaGalleryAnimating = true;
+      const nextImg = mainImg.cloneNode(false);
+      nextImg.src = img.src;
+      nextImg.alt = img.alt || '';
+      nextImg.id = 'coca-main-image';
+      nextImg.classList.add(direction > 0 ? 'coca-main-image-enter-next' : 'coca-main-image-enter-prev');
+      nextImg.setAttribute('loading', 'eager');
+      nextImg.setAttribute('decoding', 'sync');
+      mainImg.removeAttribute('id');
+      mainImageContainer.appendChild(nextImg);
+
+      try {
+        await nextImg.decode();
+      } catch (e) {
+      }
+
+      requestAnimationFrame(() => {
+        mainImg.classList.add(direction > 0 ? 'coca-main-image-leave-next' : 'coca-main-image-leave-prev');
+        nextImg.classList.add('coca-main-image-enter-active');
+      });
+
+      let transitionDone = false;
+      const finalizeTransition = () => {
+        if (transitionDone) return;
+        transitionDone = true;
+        nextImg.classList.remove('coca-main-image-enter-next', 'coca-main-image-enter-prev', 'coca-main-image-enter-active');
+        mainImg.remove();
+        nextImg.classList.remove('coca-main-image-leave-next', 'coca-main-image-leave-prev');
+        cocaGalleryAnimating = false;
+      };
+
+      nextImg.addEventListener('transitionend', finalizeTransition, { once: true });
+      setTimeout(finalizeTransition, 360);
+    }
 
     // Update active thumbnail and keep it in view
     const thumbnails = document.querySelectorAll('.coca-product__thumbnail');
@@ -466,8 +516,42 @@
     }
   }
 
-  function galleryPrev() { galleryGoTo(cocaCurrentIndex - 1); }
-  function galleryNext() { galleryGoTo(cocaCurrentIndex + 1); }
+  function galleryPrev() { galleryGoTo(cocaCurrentIndex - 1, -1); }
+  function galleryNext() { galleryGoTo(cocaCurrentIndex + 1, 1); }
+
+  function initGallerySwipe() {
+    const mainImageContainer = document.querySelector('.coca-product__main-image');
+    if (!mainImageContainer || mainImageContainer.dataset.swipeBound === 'true') return;
+    mainImageContainer.dataset.swipeBound = 'true';
+
+    let startX = 0;
+    let startY = 0;
+    let tracking = false;
+
+    mainImageContainer.addEventListener('touchstart', (event) => {
+      if (!event.touches || event.touches.length !== 1) return;
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+      tracking = true;
+    }, { passive: true });
+
+    mainImageContainer.addEventListener('touchend', (event) => {
+      if (!tracking || !event.changedTouches || !event.changedTouches.length) return;
+      tracking = false;
+
+      const endX = event.changedTouches[0].clientX;
+      const endY = event.changedTouches[0].clientY;
+      const deltaX = endX - startX;
+      const deltaY = endY - startY;
+
+      if (Math.abs(deltaX) < 40 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+      if (deltaX < 0) {
+        galleryNext();
+      } else {
+        galleryPrev();
+      }
+    }, { passive: true });
+  }
 
   // ========== Quantity ==========
   function updateQuantity(change) {
@@ -495,7 +579,10 @@
     const imageId = element.dataset.imageId;
     if (imageId) {
       const idx = cocaImages.findIndex(img => img.id === imageId);
-      if (idx !== -1) galleryGoTo(idx);
+      if (idx !== -1) {
+        const direction = idx > cocaCurrentIndex ? 1 : -1;
+        galleryGoTo(idx, direction);
+      }
     }
 
     updateVariant();
@@ -577,6 +664,7 @@
   });
 
   updateVariant();
+  initGallerySwipe();
 </script>
 
 {% schema %}

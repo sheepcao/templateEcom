@@ -499,6 +499,35 @@
         <!-- Subtotals -->
 
         <div class="cart-drawer__footer" {{ block.shopify_attributes }}>
+          {%- assign free_shipping_threshold = 180000 -%}
+          {%- assign cart_total = cart.total_price -%}
+          {%- assign remaining = free_shipping_threshold | minus: cart_total -%}
+          {%- assign progress_percent = 0 -%}
+          {%- if free_shipping_threshold > 0 -%}
+            {%- assign progress_percent = cart_total | times: 100 | divided_by: free_shipping_threshold -%}
+            {%- if progress_percent > 100 -%}
+              {%- assign progress_percent = 100 -%}
+            {%- endif -%}
+          {%- endif -%}
+
+          {%- if remaining > 0 -%}
+            <div class="cart-drawer-free-shipping">
+              <p class="cart-drawer-free-shipping__text">
+                再消费 <strong>{{ remaining | money_without_trailing_zeros }}</strong> 即可享受免运费
+              </p>
+              <div class="cart-drawer-free-shipping__progress">
+                <div class="cart-drawer-free-shipping__bar" style="width: {{ progress_percent }}%;"></div>
+              </div>
+              <p class="cart-drawer-free-shipping__meta">
+                已消费: {{ cart_total | money_without_trailing_zeros }} / {{ free_shipping_threshold | money_without_trailing_zeros }}
+              </p>
+            </div>
+          {%- else -%}
+            <div class="cart-drawer-free-shipping cart-drawer-free-shipping--reached">
+              <p class="cart-drawer-free-shipping__text">已达到免运费条件</p>
+            </div>
+          {%- endif -%}
+
           <div>
             {%- if cart.cart_level_discount_applications.size > 0 -%}
               <ul class="discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">

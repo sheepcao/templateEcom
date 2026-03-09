@@ -1,4 +1,5 @@
 {{ 'footer-coca.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'coca-utils.js' | asset_url }}" defer="defer"></script>
 
 {%- style -%}
   .coca-footer {
@@ -71,12 +72,29 @@
         {%- if block.type == 'link_list' -%}
           <div class="coca-footer__column" {{ block.shopify_attributes }}>
             <h4 class="coca-footer__column-title">{{ block.settings.heading | default: 'LINKS' }}</h4>
-            {%- if block.settings.menu != blank -%}
+            {%- liquid
+              assign has_manual_links = false
+              for i in (1..8)
+                assign link_label_key = 'link_' | append: i | append: '_label'
+                assign link_url_key = 'link_' | append: i | append: '_url'
+                if block.settings[link_label_key] != blank and block.settings[link_url_key] != blank
+                  assign has_manual_links = true
+                  break
+                endif
+              endfor
+            -%}
+            {%- if has_manual_links -%}
               <ul class="coca-footer__links">
-                {%- for link in block.settings.menu.links -%}
-                  <li>
-                    <a href="{{ link.url }}" class="coca-footer__link">{{ link.title | escape }}</a>
-                  </li>
+                {%- for i in (1..8) -%}
+                  {%- assign link_label_key = 'link_' | append: i | append: '_label' -%}
+                  {%- assign link_url_key = 'link_' | append: i | append: '_url' -%}
+                  {%- assign link_label = block.settings[link_label_key] -%}
+                  {%- assign link_url = block.settings[link_url_key] -%}
+                  {%- if link_label != blank and link_url != blank -%}
+                    <li>
+                      <a href="{{ link_url }}" class="coca-footer__link">{{ link_label | escape }}</a>
+                    </li>
+                  {%- endif -%}
                 {%- endfor -%}
               </ul>
             {%- endif -%}
@@ -84,62 +102,41 @@
         {%- endif -%}
       {%- endfor -%}
 
-      <!-- Default columns if no blocks -->
-      {%- if section.blocks.size == 0 -%}
-        <div class="coca-footer__column">
-          <h4 class="coca-footer__column-title">GUIDE</h4>
-          <ul class="coca-footer__links">
-            <li><a href="/pages/faq" class="coca-footer__link">FAQ</a></li>
-            <li><a href="/pages/shipping" class="coca-footer__link">Shipping</a></li>
-            <li><a href="/pages/returns" class="coca-footer__link">Returns & Exchanges</a></li>
-            <li><a href="/pages/size-guide" class="coca-footer__link">Size guide</a></li>
-          </ul>
-        </div>
-        <div class="coca-footer__column">
-          <h4 class="coca-footer__column-title">ABOUT</h4>
-          <ul class="coca-footer__links">
-            <li><a href="/pages/about" class="coca-footer__link">About</a></li>
-            <li><a href="/pages/stores" class="coca-footer__link">Store list</a></li>
-            <li><a href="/blogs/news" class="coca-footer__link">News</a></li>
-            <li><a href="/recruit" class="coca-footer__link">Careers</a></li>
-          </ul>
-        </div>
-        <div class="coca-footer__column">
-          <h4 class="coca-footer__column-title">MEMBER</h4>
-          <ul class="coca-footer__links">
-            <li><a href="{{ routes.account_url }}" class="coca-footer__link">My account</a></li>
-            <li><a href="{{ routes.account_login_url }}" class="coca-footer__link">Login</a></li>
-            <li><a href="{{ routes.account_register_url }}" class="coca-footer__link">Register</a></li>
-            <li><a href="/pages/wishlist" class="coca-footer__link">Wishlist</a></li>
-          </ul>
-        </div>
-        <div class="coca-footer__column">
-          <h4 class="coca-footer__column-title">CONTACT</h4>
-          <ul class="coca-footer__links">
-            <li><a href="/pages/contact" class="coca-footer__link">Contact</a></li>
-            <li><a href="/pages/corporate" class="coca-footer__link">Business customers</a></li>
-            <li><a href="/pages/press" class="coca-footer__link">Press</a></li>
-          </ul>
-        </div>
-      {%- endif -%}
     </div>
 
     <!-- Footer Accordion (Mobile) -->
     <div class="coca-footer__accordion">
       {%- for block in section.blocks -%}
         {%- if block.type == 'link_list' -%}
-          <div class="coca-footer__accordion-item" {{ block.shopify_attributes }}>
-            <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle'})">
+          <div class="coca-footer__accordion-item{% if block.settings.default_open_mobile %} active{% endif %}" {{ block.shopify_attributes }}>
+            <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle',exclusive:false})">
               <span class="coca-footer__accordion-title">{{ block.settings.heading | default: 'LINKS' }}</span>
-              <span class="coca-footer__accordion-toggle">+</span>
+              <span class="coca-footer__accordion-toggle">{%- render 'coca-icon', icon: 'chevron-down' -%}</span>
             </div>
             <div class="coca-footer__accordion-content">
-              {%- if block.settings.menu != blank -%}
+              {%- liquid
+                assign has_manual_links = false
+                for i in (1..8)
+                  assign link_label_key = 'link_' | append: i | append: '_label'
+                  assign link_url_key = 'link_' | append: i | append: '_url'
+                  if block.settings[link_label_key] != blank and block.settings[link_url_key] != blank
+                    assign has_manual_links = true
+                    break
+                  endif
+                endfor
+              -%}
+              {%- if has_manual_links -%}
                 <ul class="coca-footer__links">
-                  {%- for link in block.settings.menu.links -%}
-                    <li>
-                      <a href="{{ link.url }}" class="coca-footer__link">{{ link.title | escape }}</a>
-                    </li>
+                  {%- for i in (1..8) -%}
+                    {%- assign link_label_key = 'link_' | append: i | append: '_label' -%}
+                    {%- assign link_url_key = 'link_' | append: i | append: '_url' -%}
+                    {%- assign link_label = block.settings[link_label_key] -%}
+                    {%- assign link_url = block.settings[link_url_key] -%}
+                    {%- if link_label != blank and link_url != blank -%}
+                      <li>
+                        <a href="{{ link_url }}" class="coca-footer__link">{{ link_label | escape }}</a>
+                      </li>
+                    {%- endif -%}
                   {%- endfor -%}
                 </ul>
               {%- endif -%}
@@ -148,64 +145,6 @@
         {%- endif -%}
       {%- endfor -%}
 
-      <!-- Default accordion if no blocks -->
-      {%- if section.blocks.size == 0 -%}
-        <div class="coca-footer__accordion-item">
-          <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle'})">
-            <span class="coca-footer__accordion-title">GUIDE</span>
-            <span class="coca-footer__accordion-toggle">+</span>
-          </div>
-          <div class="coca-footer__accordion-content">
-            <ul class="coca-footer__links">
-              <li><a href="/pages/faq" class="coca-footer__link">FAQ</a></li>
-              <li><a href="/pages/shipping" class="coca-footer__link">Shipping</a></li>
-              <li><a href="/pages/returns" class="coca-footer__link">Returns & Exchanges</a></li>
-              <li><a href="/pages/size-guide" class="coca-footer__link">Size guide</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="coca-footer__accordion-item">
-          <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle'})">
-            <span class="coca-footer__accordion-title">ABOUT</span>
-            <span class="coca-footer__accordion-toggle">+</span>
-          </div>
-          <div class="coca-footer__accordion-content">
-            <ul class="coca-footer__links">
-              <li><a href="/pages/about" class="coca-footer__link">About</a></li>
-              <li><a href="/pages/stores" class="coca-footer__link">Store list</a></li>
-              <li><a href="/blogs/news" class="coca-footer__link">News</a></li>
-              <li><a href="/recruit" class="coca-footer__link">Careers</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="coca-footer__accordion-item">
-          <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle'})">
-            <span class="coca-footer__accordion-title">MEMBER</span>
-            <span class="coca-footer__accordion-toggle">+</span>
-          </div>
-          <div class="coca-footer__accordion-content">
-            <ul class="coca-footer__links">
-              <li><a href="{{ routes.account_url }}" class="coca-footer__link">My account</a></li>
-              <li><a href="{{ routes.account_login_url }}" class="coca-footer__link">Login</a></li>
-              <li><a href="{{ routes.account_register_url }}" class="coca-footer__link">Register</a></li>
-              <li><a href="/pages/wishlist" class="coca-footer__link">Wishlist</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="coca-footer__accordion-item">
-          <div class="coca-footer__accordion-header" onclick="cocaToggleAccordion(this, {itemClass:'coca-footer__accordion-item',toggleClass:'coca-footer__accordion-toggle'})">
-            <span class="coca-footer__accordion-title">CONTACT</span>
-            <span class="coca-footer__accordion-toggle">+</span>
-          </div>
-          <div class="coca-footer__accordion-content">
-            <ul class="coca-footer__links">
-              <li><a href="/pages/contact" class="coca-footer__link">Contact</a></li>
-              <li><a href="/pages/corporate" class="coca-footer__link">Business customers</a></li>
-              <li><a href="/pages/press" class="coca-footer__link">Press</a></li>
-            </ul>
-          </div>
-        </div>
-      {%- endif -%}
     </div>
 
     <!-- Footer Bottom: Payments & Copyright -->
@@ -412,9 +351,94 @@
           "label": "Heading"
         },
         {
-          "type": "link_list",
-          "id": "menu",
-          "label": "Menu"
+          "type": "header",
+          "content": "Manual links"
+        },
+        {
+          "type": "text",
+          "id": "link_1_label",
+          "label": "Link 1 label"
+        },
+        {
+          "type": "url",
+          "id": "link_1_url",
+          "label": "Link 1 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_2_label",
+          "label": "Link 2 label"
+        },
+        {
+          "type": "url",
+          "id": "link_2_url",
+          "label": "Link 2 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_3_label",
+          "label": "Link 3 label"
+        },
+        {
+          "type": "url",
+          "id": "link_3_url",
+          "label": "Link 3 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_4_label",
+          "label": "Link 4 label"
+        },
+        {
+          "type": "url",
+          "id": "link_4_url",
+          "label": "Link 4 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_5_label",
+          "label": "Link 5 label"
+        },
+        {
+          "type": "url",
+          "id": "link_5_url",
+          "label": "Link 5 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_6_label",
+          "label": "Link 6 label"
+        },
+        {
+          "type": "url",
+          "id": "link_6_url",
+          "label": "Link 6 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_7_label",
+          "label": "Link 7 label"
+        },
+        {
+          "type": "url",
+          "id": "link_7_url",
+          "label": "Link 7 URL"
+        },
+        {
+          "type": "text",
+          "id": "link_8_label",
+          "label": "Link 8 label"
+        },
+        {
+          "type": "url",
+          "id": "link_8_url",
+          "label": "Link 8 URL"
+        },
+        {
+          "type": "checkbox",
+          "id": "default_open_mobile",
+          "default": false,
+          "label": "Default open on mobile"
         }
       ]
     }

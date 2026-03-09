@@ -5,7 +5,12 @@
   - Desktop: arrows + swipe + grab-to-drag
 {% endcomment %}
 {{ 'cc-hero-slider.css' | asset_url | stylesheet_tag }}
-<section class="cc-hero section-{{ section.id }}" data-cc-hero>
+<section
+  class="cc-hero section-{{ section.id }}"
+  data-cc-hero
+  data-autoplay="{{ section.settings.autoplay_enable }}"
+  data-autoplay-speed="{{ section.settings.autoplay_speed | default: 5 }}"
+>
   <div class="cc-hero__viewport">
     <div class="cc-hero__track" id="ccHeroTrack-{{ section.id }}" data-cc-hero-track>
       {% for block in section.blocks %}
@@ -147,6 +152,10 @@
     const btnNext = root.querySelector('[data-cc-hero-next]');
     const dotsWrap = root.querySelector('[data-cc-hero-dots]');
     const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll('[data-cc-hero-dot]')) : [];
+    const autoplayEnabled = root.getAttribute('data-autoplay') === 'true';
+    const autoplaySec = Number(root.getAttribute('data-autoplay-speed') || 5);
+    const autoplayMs = Math.max(1, autoplaySec) * 1000;
+    let autoplayTimer = null;
 
     const getSlideWidth = () => track.getBoundingClientRect().width;
 
@@ -168,14 +177,35 @@
       return Math.round(track.scrollLeft / w);
     };
 
+    const goToNext = () => {
+      const i = getCurrentIndex();
+      const next = i >= slides.length - 1 ? 0 : i + 1;
+      scrollToIndex(next);
+    };
+
+    const stopAutoplay = () => {
+      if (!autoplayTimer) return;
+      clearInterval(autoplayTimer);
+      autoplayTimer = null;
+    };
+
+    const startAutoplay = () => {
+      if (!autoplayEnabled || slides.length < 2) return;
+      stopAutoplay();
+      autoplayTimer = setInterval(goToNext, autoplayMs);
+    };
+
     // arrows
     btnPrev && btnPrev.addEventListener('click', () => {
       const i = getCurrentIndex();
       scrollToIndex(Math.max(0, i - 1));
+      startAutoplay();
     });
     btnNext && btnNext.addEventListener('click', () => {
       const i = getCurrentIndex();
-      scrollToIndex(Math.min(slides.length - 1, i + 1));
+      const next = i >= slides.length - 1 ? 0 : i + 1;
+      scrollToIndex(next);
+      startAutoplay();
     });
 
     // dots
@@ -183,6 +213,7 @@
       dot.addEventListener('click', () => {
         const i = Number(dot.getAttribute('data-cc-hero-dot'));
         scrollToIndex(i);
+        startAutoplay();
       });
     });
 
@@ -195,6 +226,7 @@
     const onDown = (e) => {
       isDown = true;
       moved = 0;
+      stopAutoplay();
       track.classList.add('is-dragging');
       startX = (e.pageX || (e.touches && e.touches[0].pageX) || 0);
       startScrollLeft = track.scrollLeft;
@@ -217,6 +249,7 @@
       // snap to nearest slide
       const i = getCurrentIndex();
       scrollToIndex(i);
+      startAutoplay();
     };
 
     // prevent click if dragged
@@ -244,6 +277,10 @@
 
     // init
     setActiveDot(0);
+    startAutoplay();
+
+    root.addEventListener('mouseenter', stopAutoplay);
+    root.addEventListener('mouseleave', startAutoplay);
   })();
 </script>
 
@@ -253,7 +290,18 @@
   "tag": "section",
   "class": "section",
   "settings": [
-    { "type": "checkbox", "id": "show_dots", "label": "Show dots", "default": true }
+    { "type": "checkbox", "id": "show_dots", "label": "Show dots", "default": true },
+    { "type": "checkbox", "id": "autoplay_enable", "label": "Enable autoplay", "default": true },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Autoplay speed (seconds)",
+      "default": 5
+    }
   ],
   "blocks": [
     {

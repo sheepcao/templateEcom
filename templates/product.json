@@ -95,7 +95,9 @@
       ],
       "name": "Coca Hero Slider",
       "settings": {
-        "show_dots": true
+        "show_dots": true,
+        "autoplay_enable": true,
+        "autoplay_speed": 2
       }
     },
     "related_products_coca": {
