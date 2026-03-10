@@ -23,10 +23,39 @@ function cocaToggleAccordion(headerEl, opts) {
   var item = headerEl.parentElement;
   var toggle = headerEl.querySelector('[class*="accordion-toggle"]');
   var isActive = item.classList.contains(activeClass);
+  var contentEl = headerEl.nextElementSibling;
   var setToggleState = function(el, expanded) {
     if (!el) return;
     if (el.querySelector('svg')) return;
         el.textContent = expanded ? '-' : '+';
+  };
+
+  var animateAccordion = function(el, expand) {
+    if (!contentEl) return;
+    
+    if (expand) {
+      // 展开前设置初始高度为0
+      contentEl.style.maxHeight = '0';
+      contentEl.style.overflow = 'hidden';
+      contentEl.style.transition = 'max-height 0.3s ease-in-out';
+      
+      // 强制重排
+      contentEl.offsetHeight;
+      
+      // 设置最终高度
+      contentEl.style.maxHeight = contentEl.scrollHeight + 'px';
+    } else {
+      // 折叠时设置当前高度
+      contentEl.style.maxHeight = contentEl.scrollHeight + 'px';
+      contentEl.style.overflow = 'hidden';
+      contentEl.style.transition = 'max-height 0.3s ease-in-out';
+      
+      // 强制重排
+      contentEl.offsetHeight;
+      
+      // 设置最终高度为0
+      contentEl.style.maxHeight = '0';
+    }
   };
 
   if (exclusive) {
@@ -36,6 +65,15 @@ function cocaToggleAccordion(headerEl, opts) {
     if (group) {
       group.querySelectorAll('.' + activeClass).forEach(function(i) {
         if (i !== item) {
+          var siblingHeader = i.querySelector('header, [class*="accordion-header"]');
+          var siblingContent = siblingHeader ? siblingHeader.nextElementSibling : null;
+          if (siblingContent) {
+            siblingContent.style.maxHeight = siblingContent.scrollHeight + 'px';
+            siblingContent.offsetHeight;
+            siblingContent.style.maxHeight = '0';
+            siblingContent.style.overflow = 'hidden';
+            siblingContent.style.transition = 'max-height 0.3s ease-in-out';
+          }
           i.classList.remove(activeClass);
           var t = i.querySelector('[class*="accordion-toggle"]');
           setToggleState(t, false);
@@ -45,10 +83,14 @@ function cocaToggleAccordion(headerEl, opts) {
   }
 
   if (isActive) {
-    item.classList.remove(activeClass);
+    animateAccordion(item, false);
+    setTimeout(function() {
+      item.classList.remove(activeClass);
+    }, 300);
     setToggleState(toggle, false);
   } else {
     item.classList.add(activeClass);
+    animateAccordion(item, true);
     setToggleState(toggle, true);
   }
 }
